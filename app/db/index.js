@@ -3,6 +3,7 @@
 var config = require('../config');
 var Mongoose = require('mongoose').connect(config.dbURI);
 var userSchema = require('../models/user.js');
+var picSchema = require('../models/picture.js');
 
 // Log an error if the connection fails
 Mongoose.connection.on('error', function (error) {
@@ -19,9 +20,12 @@ Mongoose.connection.on('error', function (error) {
 // Turn the schema into a usable model
 // var fbUserModel = Mongoose.model('fbUser', fbUser);
 var userModel = Mongoose.model('user', userSchema);
+var picModel = Mongoose.model('picture', picSchema);
+
 
 module.exports = {
     Mongoose,
     // fbUserModel,
-    userModel
+    userModel,
+    picModel
 }

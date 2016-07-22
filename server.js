@@ -6,12 +6,24 @@ var app = express();
 var bodyParser = require('body-parser');
 var photoParadise = require('./app');
 var passport = require('passport');
-var mainRoutes = require('./app/routes/index.js');
+// var mainRoutes = require('./app/routes/index.js');
+var config = require('./app/config');
+var knox = require('knox');
+var fs = require('fs');
+var os = require('os');
+var formidable = require('formidable');
 // var userRoutes = require('./app/routes/user.js');
 
 app.set('view engine', 'ejs');
+app.set('host', config.host);
 app.use(express.static('public'));
 app.use(bodyParser.urlencoded({ extended: true }));
+
+var knoxClient = knox.createClient({
+    key: config.S3AccessKey,
+    secret: config.S3Secret,
+    bucket: config.S3Bucket
+});
 // app.use(bodyParser.urlencoded());
 // app.use(bodyParser.json());
 
@@ -19,13 +31,16 @@ app.use(photoParadise.session);
 app.use(passport.initialize());
 app.use(passport.session());
 
-app.use('/', mainRoutes);
+// app.use('/', mainRoutes);
 // app.use('/', userRoutes);
 
+var server = require('http').createServer(app);
+var io = require('socket.io')(server);
+
 // app.use('/', photoParadise.router);
-// require('./app/routes/index.js')(express, app);
+require('./app/routes/index.js')(express, app, formidable, fs, os, knoxClient, io);
 // require('./app/routes/user.js')(express, app);
 
-app.listen(PORT, function () {
+server.listen(PORT, function () {
     console.log('PicParadise Running on PORT: ', PORT);
 });

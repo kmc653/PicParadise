@@ -7,5 +7,8 @@
         "clientSecret": "f3a00fd73279657871b824cf434b384d",
         "callbackURL": "//localhost:3000/auth/facebook/callback",
         "profileFields": ["id", "displayName", "photos"]
-    }
+    },
+    "S3AccessKey": "AKIAJCN2GXMKMO6G6SBA",
+    "S3Secret": "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",
+    "S3Bucket": "picparadise"
 }
