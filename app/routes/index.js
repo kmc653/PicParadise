@@ -156,6 +156,19 @@ module.exports = function (express, app, formidable, fs, os, knoxClient, io) {
         })
     });
 
+    router.get('/getimages', function (req, res) {
+        db.picModel.find({}, null, {sort:{votes:-1}}, function (err, result) {
+            res.send(JSON.stringify(result));
+        });
+    });
+
+    router.get('/voteup/:id', function (req, res) {
+        db.picModel.findByIdAndUpdate(req.params.id, {$inc:{votes:1}}, {new: true}, function (err, result) {
+            console.log(result);
+            res.send(JSON.stringify(result));
+        });
+    });
+
     app.use('/', router);
 }
 
