@@ -95,6 +95,8 @@ module.exports = function (express, app, formidable, fs, os, knoxClient, io) {
 
     router.post('/upload', function (req, res) {
         
+        var userid = req.session.user._id;
+
         function generateFilename (filename) {
             var ext_regex = /(?:\.([^.]+))?$/;
             var ext = ext_regex.exec(filename)[1];
@@ -134,7 +136,8 @@ module.exports = function (express, app, formidable, fs, os, knoxClient, io) {
                             if(res.statusCode == 200) {
                                 var singleImage = db.picModel({
                                     filename: fname,
-                                    votes: 0
+                                    votes: 0,
+                                    userId: userid
                                 }).save();
 
                                 Socket.emit('status', {
@@ -164,7 +167,6 @@ module.exports = function (express, app, formidable, fs, os, knoxClient, io) {
 
     router.get('/voteup/:id', function (req, res) {
         db.picModel.findByIdAndUpdate(req.params.id, {$inc:{votes:1}}, {new: true}, function (err, result) {
-            console.log(result);
             res.send(JSON.stringify(result));
         });
     });
