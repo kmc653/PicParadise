@@ -29,7 +29,9 @@
         });
 
         function renderList () {
-            $('.gallery ul').html('');
+            // $('.gallery ul').html('');
+            $('.row').html('');
+
             $.ajax({
                 url: host + '/getimages',
                 type: "GET",
@@ -37,19 +39,32 @@
                     var imageList = JSON.parse(data);
 
                     for(var i = 0; i < imageList.length; i++) {
-                        var str = '<li>';
-                        str += '<div>'
+                        // var str = '<li>';
+                        // str += '<div>'
+                        // str += '<a href="#" data-photoid="' + imageList[i]._id + '" class="voteUp">';
+                        // str += '<img src="/img/voteup.png" alt="Click Here to Vote Up !">';
+                        // str += '<h4>' + imageList[i].votes + '</h4>';
+                        // str += '</a>';
+                        // str += '</div>';
+                        // str += '<div>';
+                        // str += '<img src="https://d1uev2sppo24zv.cloudfront.net/' + imageList[i].filename + '" alt="">';
+                        // str += '<a '
+                        // str += '</div>';
+                        // str += '</li>';
+                        var str = '<div class="col-sm-6 col-md-4">';
+                        str += '<div class="thumbnail">';
+                        str += '<img src="https://d1uev2sppo24zv.cloudfront.net/' + imageList[i].filename + '" alt="">';
+                        
                         str += '<a href="#" data-photoid="' + imageList[i]._id + '" class="voteUp">';
                         str += '<img src="/img/voteup.png" alt="Click Here to Vote Up !">';
                         str += '<h4>' + imageList[i].votes + '</h4>';
                         str += '</a>';
+                        
                         str += '</div>';
-                        str += '<div>';
-                        str += '<img src="https://d1uev2sppo24zv.cloudfront.net/' + imageList[i].filename + '" alt="">';
                         str += '</div>';
-                        str += '</li>';
 
-                        $('.gallery ul').append(str);
+                        // $('.gallery ul').append(str);
+                        $('.row').append(str);
                     }
                 },
                 error: function (error) {
@@ -123,24 +138,8 @@
             <h5 class="status"></h5>
         </div>
 
-        <div class="gallery">
-            <ul>
-                <!-- Repeat the following <li> structure for every image -->
-                <!-- <li>
-                    <div class="overlay">
-                    <div class="voteCtrl">
-                        <a href="#" class="voteUp">
-                            <img src="../images/voteup.png" alt="Click Here to Vote Up !">
-                            <h4>100</h4>
-                        </a>
-                    </div>
-                    </div>
-                    <div class="imageHolder">
-                        <img src="../images/someimage.jpg" alt="">
-                    </div>
-                </li> -->
-                <!-- End Repeat -->
-            </ul>
+        <div class="row">
+            
         </div>
     </div>
 </body>
