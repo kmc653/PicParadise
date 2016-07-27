@@ -6,6 +6,7 @@
     <link rel="stylesheet" href="./css/bootstrap.min.css">
     <link rel="stylesheet" href="./css/style.css">
     <script src="./js/jquery-2.1.4.min.js"></script>
+    <script src="./js/bootstrap.min.js"></script>
     <script src="./socket.io/socket.io.js"></script>
     <script src="./js/photogrid_utils.js"></script>
     <script>
@@ -29,7 +30,6 @@
         });
 
         function renderList () {
-            // $('.gallery ul').html('');
             $('.row').html('');
 
             $.ajax({
@@ -39,31 +39,19 @@
                     var imageList = JSON.parse(data);
 
                     for(var i = 0; i < imageList.length; i++) {
-                        // var str = '<li>';
-                        // str += '<div>'
-                        // str += '<a href="#" data-photoid="' + imageList[i]._id + '" class="voteUp">';
-                        // str += '<img src="/img/voteup.png" alt="Click Here to Vote Up !">';
-                        // str += '<h4>' + imageList[i].votes + '</h4>';
-                        // str += '</a>';
-                        // str += '</div>';
-                        // str += '<div>';
-                        // str += '<img src="https://d1uev2sppo24zv.cloudfront.net/' + imageList[i].filename + '" alt="">';
-                        // str += '<a '
-                        // str += '</div>';
-                        // str += '</li>';
-                        var str = '<div class="col-sm-6 col-md-4">';
-                        str += '<div class="thumbnail">';
+                        var str = '<div class="col-sm-6 col-md-3">';
+                        str += '<div class="thumbnail" id="photoList">';
                         str += '<img src="https://d1uev2sppo24zv.cloudfront.net/' + imageList[i].filename + '" alt="">';
-                        
+                        str += '<div class="voteUpImg">';     
                         str += '<a href="#" data-photoid="' + imageList[i]._id + '" class="voteUp">';
-                        str += '<img src="/img/voteup.png" alt="Click Here to Vote Up !">';
-                        str += '<h4>' + imageList[i].votes + '</h4>';
+                        str += '<p><img src="/img/voteup.png" alt="Click Here to Vote Up !">';
+                        str += '<span>' + imageList[i].votes + '</span></p>';
                         str += '</a>';
-                        
+                        str += '<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#myModal" id="saveButton">Save</button>';
+                        str += '</div>';
                         str += '</div>';
                         str += '</div>';
 
-                        // $('.gallery ul').append(str);
                         $('.row').append(str);
                     }
                 },
@@ -111,14 +99,28 @@
                 type: "GET",
                 success: function (data) {
                     var parseData = JSON.parse(data);
-                    that.find('h4').html(parseData.votes);
+                    that.find('span').html(parseData.votes);
                 },
                 error: function (error) {
                     console.log(error);
                 }
             });
+
+            return false;
         });
-    })
+
+        $(document).on({
+            mouseover: function () {
+                $(this).find('#saveButton').show();
+            },
+            mouseout: function () {
+                $(this).find('#saveButton').hide();
+            }
+        }, '#photoList');
+        
+        
+
+    });
     </script>
 </head>
 <body>
@@ -138,8 +140,56 @@
             <h5 class="status"></h5>
         </div>
 
+        <div>               
+            <p><%= typeof flash != 'undefined' ? flash : '' %></p>
+        </div>
+
+        <!-- saveModal -->
+        <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+          <div class="modal-dialog" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="myModalLabel">Modal title</h4>
+              </div>
+              <div class="modal-body">
+                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#CreateBoardModel">Create a Board</button>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary">Save changes</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- CreateBoardModel -->
+        <div class="modal fade" id="CreateBoardModel" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+          <div class="modal-dialog" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="myModalLabel">Create a board</h4>
+              </div>
+              <div class="modal-body">
+                <form action="/board" method="POST">
+                    <div class="form-group">
+                        <input type="text" name="boardName" class="form-control" placeholder='Like "Place to Go" or "Furniture"'>
+                    </div>
+                    <div class="form-group">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary">Create</button>
+                    </div>
+                </form>
+              </div>
+              <div class="modal-footer">
+                
+              </div>
+            </div>
+          </div>
+        </div>
+
         <div class="row">
-            
         </div>
     </div>
 </body>

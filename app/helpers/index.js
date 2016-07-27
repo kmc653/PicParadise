@@ -38,10 +38,22 @@ var findOne = function (body) {
             }
         });
     });
-    // return db.userModel.findOne({
-    //     'profileId': profileID
-    // });
 };
+
+var findOneBoard = function (body, currentUserId) {
+    return new Promise(function (resolve, reject) {
+        db.boardModel.findOne({
+            'boardName': body.boardName,
+            'userId': currentUserId
+        }, function (error, board) {
+            if (error) {
+                reject(error);
+            } else {
+                resolve(board);
+            }
+        });
+    });
+}
 
 // var createNewfbUser = function (profile) {
 //     return new Promise(function(resolve, reject) {
@@ -74,7 +86,23 @@ var createNewUser = function (body) {
                 resolve(newUser);
             }
         });
-    })
+    });
+}
+
+var createNewBoard = function (body, currentUserId) {
+    return new Promise(function (resolve, reject) {
+        var newBoard = db.boardModel({
+                    boardName: body.boardName.toLowerCase(),
+                    userId: currentUserId
+        });
+        newBoard.save(function (error) {
+            if(error) {
+                reject(error);
+            } else {
+                resolve(newBoard);
+            }
+        });
+    });
 }
 
 var findById = function (id) {
@@ -103,5 +131,7 @@ module.exports = {
     findOne,
     createNewUser,
     findById,
+    findOneBoard,
+    createNewBoard
     // isAuthenticated
 }
