@@ -7,39 +7,33 @@ var db = require('../db');
 module.exports = function (express, app) {
     var router = express.Router();
 
+    // Create a board
     router.post('/board', function (req, res) {
         var body = _.pick(req.body, 'boardName');
         var currentUser = req.session.user;
 
         h.findOneBoard(body, currentUser._id)
             .then(function (result) {
-                if (result) {
+                if (result.length !== 0) {
+                    req.flash('error', "This board has already been created. Please try another one.");
                     res.render('index', {
-                        flash: "This board has been created. Please try another one.",
                         user: currentUser,
                         host: app.get('host')
                     });
                 } else {
                     h.createNewBoard(body, currentUser._id)
                         .then(function (result) {
+                            console.log(result);
+                            req.flash('success', "Board is created successfully!");
                             res.redirect('/');
                         })
                         .catch(function (error) {
                             res.send(error);
                         });
                 }
+            }).catch(function (error) {
+                res.send(error);
             });
-        // db.boardModel.findOne({ boardName: body.boardName.toLowerCase(), userId: currentUserId }, null, function(err, board) {
-        //     if(board) {
-        //         res.send("You've created the same board!");
-        //     } else {
-        //         var newBoard = db.boardModel({
-        //             boardName: body.boardName.toLowerCase(),
-        //             userId: currentUserId
-        //         }).save();
-        //         res.send('Create successfully!');
-        //     }
-        // });
     });
 
     app.use('/', router);

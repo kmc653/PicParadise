@@ -12,6 +12,7 @@
     <script>
     $(function () {
         var host = <%- JSON.stringify(host) %>;
+        // var user = <%- JSON.stringify(user) %>;
 
         console.log(host);
 
@@ -47,7 +48,7 @@
                         str += '<p><img src="/img/voteup.png" alt="Click Here to Vote Up !">';
                         str += '<span>' + imageList[i].votes + '</span></p>';
                         str += '</a>';
-                        str += '<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#myModal" id="saveButton">Save</button>';
+                        str += '<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#myModal" id="saveButton" data-photoid="' + imageList[i]._id + '">Save</button>';
                         str += '</div>';
                         str += '</div>';
                         str += '</div>';
@@ -91,6 +92,7 @@
             }
         }
 
+        // click to vote
         $(document).on('click', '.voteUp', function (e) {
             var that = $(this);
 
@@ -109,6 +111,40 @@
             return false;
         });
 
+        // click save button of photo and save to board 
+        $(document).on('click', '#saveButton', function (e) {
+        	var selectedphotoId = $(this).data('photoid');
+        	
+        	$('input[name="photoid"]').val(selectedphotoId);
+        	// var selectedBoardId;
+
+        	// $('select.form-control.boardlist').change(function () {
+        	// 	selectedBoardId = $(this).find(':selected').data('boardid');
+        	// });
+
+        	// $('#savetoboardbutton').click(function () {
+        	// 	$.ajax({
+        	// 		url: host + '/savephoto',
+        	// 		data: {
+        	// 			photoId: selectedphotoId,
+        	// 			boardId: selectedBoardId,
+        	// 		},
+        	// 		type: "GET", 
+        	// 		dataType: "text",
+        	// 		success: function () {
+        	// 			// var parseData = JSON.parse(data);
+        	// 			// $('#messages').append(data);
+        	// 		},
+        	// 		error: function (error) {
+         //         	   console.log(error);
+         //        	}
+        	// 	});
+         //    	return false;
+        	// });
+        	// return false;
+        });
+
+        // show and hide save button when mouse over or out
         $(document).on({
             mouseover: function () {
                 $(this).find('#saveButton').show();
@@ -117,6 +153,8 @@
                 $(this).find('#saveButton').hide();
             }
         }, '#photoList');
+
+
         
         
 
@@ -140,53 +178,78 @@
             <h5 class="status"></h5>
         </div>
 
-        <div>               
-            <p><%= typeof flash != 'undefined' ? flash : '' %></p>
-        </div>
+        <% if (success) { %>
+            <div class="alert alert-success">
+                <%= success %>
+            </div>
+        <% } %>
+        <% if (error) { %>
+            <div class="alert alert-danger">
+                <%= error %>
+            </div>
+        <% } %>
 
         <!-- saveModal -->
         <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
-          <div class="modal-dialog" role="document">
-            <div class="modal-content">
-              <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                <h4 class="modal-title" id="myModalLabel">Modal title</h4>
-              </div>
-              <div class="modal-body">
-                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#CreateBoardModel">Create a Board</button>
-              </div>
-              <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary">Save changes</button>
-              </div>
-            </div>
-          </div>
+          	<div class="modal-dialog" role="document">
+            	<div class="modal-content">
+              		<div class="modal-header">
+                		<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                		<h3 class="modal-title" id="myModalLabel">Pick a board</h3>
+              		</div>
+              		<div class="modal-body">
+                		<form role="form" action='/savephoto' method="POST">
+						    <div class="form-group">
+						      <label>Boards list (select one):</label>
+						      <select class="form-control boardlist" name="boardid">
+						        <option value="" disabled selected>Choose a board</option>
+						        <% if(user.boards.length !== 0) { %>
+	              					<% user.boards.forEach(function (board) { %>
+	              						<option value="<%= board._id %>"><%= board.title %></option>
+	              					<% }); %>
+	                  			<% } %>
+						      </select>
+						      <input type="hidden" name="photoid" value="">
+						    </div>
+						    <div class="form-group">
+						    	<button type="submit" class="btn btn-danger" id="savetoboardbutton">Save</button>
+						    	<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+						    </div>
+						 </form>
+                		
+              		</div>
+		            <div class="modal-footer">
+		            	<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#CreateBoardModel">Create a Board</button>
+		                
+		            </div>
+            	</div>
+          	</div>
         </div>
 
         <!-- CreateBoardModel -->
         <div class="modal fade" id="CreateBoardModel" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
-          <div class="modal-dialog" role="document">
-            <div class="modal-content">
-              <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                <h4 class="modal-title" id="myModalLabel">Create a board</h4>
-              </div>
-              <div class="modal-body">
-                <form action="/board" method="POST">
-                    <div class="form-group">
-                        <input type="text" name="boardName" class="form-control" placeholder='Like "Place to Go" or "Furniture"'>
-                    </div>
-                    <div class="form-group">
-                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                        <button type="submit" class="btn btn-primary">Create</button>
-                    </div>
-                </form>
-              </div>
-              <div class="modal-footer">
-                
-              </div>
-            </div>
-          </div>
+          	<div class="modal-dialog" role="document">
+            	<div class="modal-content">
+              		<div class="modal-header">
+                		<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                		<h4 class="modal-title" id="myModalLabel">Create a board</h4>
+              		</div>
+	              	<div class="modal-body">
+	                	<form action="/board" method="POST">
+	                    	<div class="form-group">
+	                        	<input type="text" name="boardName" class="form-control" placeholder='Like "Place to Go" or "Furniture"'>
+	                    	</div>
+		                    <div class="form-group">
+		                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+		                        <button type="submit" class="btn btn-primary">Create</button>
+		                    </div>
+	                	</form>
+	              	</div>
+	              	<div class="modal-footer">
+	                
+	              	</div>
+            	</div>
+          	</div>
         </div>
 
         <div class="row">

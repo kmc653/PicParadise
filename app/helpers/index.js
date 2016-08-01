@@ -42,16 +42,26 @@ var findOne = function (body) {
 
 var findOneBoard = function (body, currentUserId) {
     return new Promise(function (resolve, reject) {
-        db.boardModel.findOne({
-            'boardName': body.boardName,
-            'userId': currentUserId
-        }, function (error, board) {
-            if (error) {
-                reject(error);
+        db.userModel.find({
+            '_id': currentUserId,
+            'boards.title' : body.boardName
+        }, function (err, user) {
+            if (err) { 
+                reject(err);
             } else {
-                resolve(board);
+                resolve(user);
             }
         });
+        // db.boardModel.findOne({
+        //     'boardName': body.boardName,
+        //     'userId': currentUserId
+        // }, function (error, board) {
+        //     if (error) {
+        //         reject(error);
+        //     } else {
+        //         resolve(board);
+        //     }
+        // });
     });
 }
 
@@ -91,17 +101,38 @@ var createNewUser = function (body) {
 
 var createNewBoard = function (body, currentUserId) {
     return new Promise(function (resolve, reject) {
-        var newBoard = db.boardModel({
-                    boardName: body.boardName.toLowerCase(),
-                    userId: currentUserId
-        });
-        newBoard.save(function (error) {
-            if(error) {
-                reject(error);
+        // db.userModel.findById(currentUserId, function (err, user) {
+        //     if (err) reject(err);
+
+        //     user.boards = body.boardName;
+        //     user.save(function (err) {
+        //         if (err) reject(err);
+        //     });
+        //     resolve(user);
+        // });
+        db.userModel.findByIdAndUpdate(currentUserId, {
+            $push: {
+                "boards": { title: body.boardName.toLowerCase() }
+            }
+        }, {new: true}, function (err, user) {
+            if (err) {
+                reject(err);
             } else {
-                resolve(newBoard);
+                resolve(user);
             }
         });
+
+        // var newBoard = db.boardModel({
+        //             boardName: body.boardName.toLowerCase(),
+        //             userId: currentUserId
+        // });
+        // newBoard.save(function (error) {
+        //     if(error) {
+        //         reject(error);
+        //     } else {
+        //         resolve(newBoard);
+        //     }
+        // });
     });
 }
 

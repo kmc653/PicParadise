@@ -18,9 +18,13 @@ module.exports = function (express, app, formidable, fs, os, knoxClient, io) {
         
     router.get('/', function (req, res) {
         if (req.session.user) {
-            res.render('index', {
-                user: req.session.user,
-                host: app.get('host')
+            var currentUserId = req.session.user._id;
+            db.userModel.findById(currentUserId, function (err, user) {
+                if(err) throw err;
+                res.render('index', {
+                    user: user,
+                    host: app.get('host')
+                });
             });
         } else {
             res.redirect('login');
@@ -40,13 +44,13 @@ module.exports = function (express, app, formidable, fs, os, knoxClient, io) {
         h.findOne(body)
             .then(function (result) {
                 if(result) {
-                    res.render('signup', {
-                        flash: "This email has been used. Please try another one."
-                    });
+                    req.flash('error', "This email has been used. Please try another one.");
+                    res.render('signup');
                 } else {
                     h.createNewUser(body)
                         .then(function (user) {
                             req.session.user = user;
+                            req.flash('success', "Sign up successfully!");
                             res.redirect('/');
                         })
                         .catch(function (error) {
@@ -76,12 +80,12 @@ module.exports = function (express, app, formidable, fs, os, knoxClient, io) {
                             throw err;
                         }
                         req.session.user = result;
+                        req.flash('success', "Login successfully!");
                         res.redirect('/');
                     });
                 } else {
-                    res.render('login', {
-                        flash: 'Cound not find this account'
-                    });
+                    req.flash('error', "Something wrong when you log in. Please try again.");
+                    res.render('login');
                 }
             }).catch(function (error) {
                 console.log('Error when loging');
@@ -169,6 +173,67 @@ module.exports = function (express, app, formidable, fs, os, knoxClient, io) {
         db.picModel.findByIdAndUpdate(req.params.id, {$inc:{votes:1}}, {new: true}, function (err, result) {
             res.send(JSON.stringify(result));
         });
+    });
+
+    router.post('/savephoto', function (req, res) {
+        var body = _.pick(req.body, 'boardid', 'photoid');
+        var currentUserId = req.session.user._id;
+
+        db.userModel.findOne({
+            _id: currentUserId,
+            "boards._id": body.boardid
+        }, 'boards', function(err, user) {
+            if(err) throw err;
+            
+            user.boards.forEach(function(board, index, array) {
+                if(board._id.toString() === body.boardid) {
+                    if(board.pins.includes(body.photoid)) {
+                        req.flash('error', "You have already saved this picture.");
+                        res.redirect('/');
+                    } else {
+                        user.boards[index].pins.push(body.photoid);
+                        user.save(function(err) {
+                            if(err) throw err;
+
+                            req.flash('success', "Picture is saved successfully!");
+                            res.redirect('/');
+                        });
+                    }
+                }
+            });
+        });
+
+        // db.userModel.findOneAndUpdate({
+        //     _id: currentUserId, "boards._id": body.boardid
+        // }, {
+        //     $push: {
+        //         "boards.$.pins": body.photoid
+        //     }
+        // }, {new: true}, function (err, user) {
+        //     if(err) throw err;
+        //     res.render('index', {
+        //         user: user,
+        //         host: app.get('host')
+        //     });
+        // });
+
+        // db.userModel.findById(currentUserId, function (err, user) {
+        //     if(err) throw err;
+        //     console.log(user);
+        //     user.boards.forEach(function(board) {
+        //         if(board._id === body.boardid) {
+        //             console.log(board.title);
+        //             // board.pins.push(photoId);
+        //             // user.save(function(err) {
+        //             //     if(err) throw err;
+        //             //     Socket.emit('status', {
+        //             //                 'msg': 'Save!!',
+        //             //                 'delay': 3000
+        //             //     });
+        //             // });
+        //         }
+        //     });
+        // });
     });
 
     app.use('/', router);
