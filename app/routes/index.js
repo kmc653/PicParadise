@@ -38,27 +38,37 @@ module.exports = function (express, app, formidable, fs, os, knoxClient, io) {
         res.render('signup');
     });
 
-    router.post('/signup', function (req, res) {
-        var body = _.pick(req.body, 'email', 'username', 'password');
+    // router.post('/signup', function (req, res) {
+    //     var body = _.pick(req.body, 'email', 'username', 'password');
 
-        h.findOne(body)
-            .then(function (result) {
-                if(result) {
-                    req.flash('error', "This email has been used. Please try another one.");
-                    res.render('signup');
-                } else {
-                    h.createNewUser(body)
-                        .then(function (user) {
-                            req.session.user = user;
-                            req.flash('success', "Sign up successfully!");
-                            res.redirect('/');
-                        })
-                        .catch(function (error) {
-                            console.log("Error when creating new user.");
-                        });
-                }
-            });
-    });
+    //     h.createNewUser(body)
+    //         .then(function (user) {
+    //             req.session.user = user;
+    //             req.flash('success', "Sign up successfully!");
+    //             res.redirect('/');
+    //         })
+    //         .catch(function (error) {
+    //             console.log(error);
+    //         });
+
+    //     h.findOne(body)
+    //         .then(function (result) {
+    //             if(result) {
+    //                 req.flash('error', "This email has been used. Please try another one.");
+    //                 res.render('signup');
+    //             } else {
+    //                 h.createNewUser(body)
+    //                     .then(function (user) {
+    //                         req.session.user = user;
+    //                         req.flash('success', "Sign up successfully!");
+    //                         res.redirect('/');
+    //                     })
+    //                     .catch(function (error) {
+    //                         console.log("Error when creating new user.");
+    //                     });
+    //             }
+    //         });
+    // });
 
     router.get('/login', function (req, res) {
         if(req.session.user) {
@@ -76,19 +86,23 @@ module.exports = function (express, app, formidable, fs, os, knoxClient, io) {
             .then(function (result) {
                 if (result) {
                     result.isValidPassword(body.password, function(err, isValid) {
-                        if (err) {
-                            throw err;
+                        if (err) throw err;
+                        
+                        if(isValid) {
+                            req.session.user = result;
+                            req.flash('success', "Login successfully!");
+                            res.redirect('/');
+                        } else {
+                            req.flash('error', "Password is wrong. Please try again.");
+                            res.redirect('login');
                         }
-                        req.session.user = result;
-                        req.flash('success', "Login successfully!");
-                        res.redirect('/');
                     });
                 } else {
-                    req.flash('error', "Something wrong when you log in. Please try again.");
-                    res.render('login');
+                    req.flash('error', "Could not find this account. Please sign up with your email address.");
+                    res.redirect('login');
                 }
             }).catch(function (error) {
-                console.log('Error when loging');
+                console.log('Error:', error);
             });
     });
 

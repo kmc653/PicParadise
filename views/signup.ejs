@@ -12,7 +12,16 @@
 		<div class="container">
 			<div class="row">
 				<div>				
-					<p><%= typeof flash != 'undefined' ? flash : '' %></p>
+					<% if (success) { %>
+	                    <div class="alert alert-success">
+	                        <%= success %>
+	                    </div>
+	                <% } %>
+	                <% if (error) { %>
+	                    <div class="alert alert-danger">
+	                        <%= error %>
+	                    </div>
+	                <% } %>
 				</div>
 				<div class="col-md-4 col-md-offset-4 well">
 					<h2 class="text-center">PicParadise</h1>
@@ -25,7 +34,7 @@
 					
 					<p class="text-center">OR</p>
 
-					<form action="/signup" method="POST">
+					<form action="/users" method="POST">
 						<div class="form-group">
 							<input type="email" name="email" class="form-control" placeholder="Email">
 						</div>

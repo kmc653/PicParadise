@@ -1,31 +1,35 @@
-// 'use strict';
+'use strict';
 
-// var h = require('../helpers');
-// var _ = require('underscore');
-// var express = require('express');
-// var router = express.Router();
+var h = require('../helpers');
+var _ = require('underscore');
+var db = require('../db');
 
-// router.post('/signup', function (req, res) {
-//     var body = _.pick(req.body, 'email', 'username', 'password');
+module.exports = function (express, app) {
+    var router = express.Router();
 
-//     h.findOne(body)
-//         .then(function (result) {
-//             if(result) {
-//                 res.render('signup', {
-//                     flash: "This email has been used. Please try another one."
-//                 });
-//             } else {
-//                 h.createNewUser(body)
-//                     .then(function (user) {
-//                         res.redirect('/home', {
-//                             user: user
-//                         });
-//                     })
-//                     .catch(function (error) {
-//                         console.log("Error when creating new user.");
-//                     })
-//             }
-//         });
-// });
+    router.post('/users', function (req, res) {
+        var body = _.pick(req.body, 'email', 'username', 'password');
 
-// module.exports = router;
+        
+        h.findOne(body)
+            .then(function (result) {
+                if(result) {
+                    req.flash('error', "This email has been used. Please try another one.");
+                    res.redirect('signup');
+                } else {
+                    h.createNewUser(body)
+                        .then(function (user) {
+                            req.session.user = user;
+                            req.flash('success', "Sign up successfully!");
+                            res.redirect('/');
+                        })
+                        .catch(function (error) {
+                            console.log("Error when creating new user.");
+                        });
+                }
+            });
+    });
+
+    app.use('/', router);  
+}
+

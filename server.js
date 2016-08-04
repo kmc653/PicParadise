@@ -42,7 +42,7 @@ var knoxClient = knox.createClient({
 // app.use(bodyParser.urlencoded());
 // app.use(bodyParser.json());
 
-app.use(photoParadise.session);
+// app.use(photoParadise.session);
 app.use(passport.initialize());
 app.use(passport.session());
 
@@ -55,6 +55,7 @@ var io = require('socket.io')(server);
 // app.use('/', photoParadise.router);
 require('./app/routes/index.js')(express, app, formidable, fs, os, knoxClient, io);
 require('./app/routes/board.js')(express, app);
+require('./app/routes/user.js')(express, app);
 
 server.listen(PORT, function () {
     console.log('PicParadise Running on PORT: ', PORT);
