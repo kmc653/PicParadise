@@ -190,7 +190,7 @@ module.exports = function (express, app, formidable, fs, os, knoxClient, io) {
     });
 
     router.post('/savephoto', function (req, res) {
-        var body = _.pick(req.body, 'boardid', 'photoid');
+        var body = _.pick(req.body, 'boardid', 'photofilename');
         var currentUserId = req.session.user._id;
 
         db.userModel.findOne({
@@ -205,7 +205,7 @@ module.exports = function (express, app, formidable, fs, os, knoxClient, io) {
                         req.flash('error', "You have already saved this picture.");
                         res.redirect('/');
                     } else {
-                        user.boards[index].pins.push(body.photoid);
+                        user.boards[index].pins.push(body.photofilename);
                         user.save(function(err) {
                             if(err) throw err;
 

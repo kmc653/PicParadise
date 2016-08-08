@@ -2,12 +2,13 @@
 
 var PORT = process.env.PORT || 3000;
 var express = require('express');
-var app = express();
-var session = require('express-session');
+// var MongoStore = require('connect-mongo')(express);
+// var session = require('express-session');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
-var photoParadise = require('./app');
-var passport = require('passport');
+var app = express();
+var picParadise = require('./app');
+// var passport = require('passport');
 // var mainRoutes = require('./app/routes/index.js');
 var config = require('./app/config');
 var knox = require('knox');
@@ -19,10 +20,10 @@ var flash = require('connect-flash');
 
 app.set('view engine', 'ejs');
 app.set('host', config.host);
-app.use(express.static('public'));
+app.use(express.static(__dirname + '/public'));
 app.use(bodyParser.urlencoded({ extended: true }));
-app.use(cookieParser('secret'));
-app.use(session({cookie: { maxAge: 60000 }}));
+app.use(cookieParser());
+app.use(picParadise.session);
 app.use(flash());
 app.use(function (req, res, next) {
     var err = req.flash('error');
@@ -43,8 +44,8 @@ var knoxClient = knox.createClient({
 // app.use(bodyParser.json());
 
 // app.use(photoParadise.session);
-app.use(passport.initialize());
-app.use(passport.session());
+// app.use(passport.initialize());
+// app.use(passport.session());
 
 // app.use('/', mainRoutes);
 // app.use('/', userRoutes);

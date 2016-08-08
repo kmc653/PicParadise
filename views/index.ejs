@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <title>PicParadise - Home</title>
-    <link rel="stylesheet" href="./css/bootstrap.min.css">
-    <link rel="stylesheet" href="./css/style.css">
-    <script src="./js/jquery-2.1.4.min.js"></script>
-    <script src="./js/bootstrap.min.js"></script>
-    <script src="./socket.io/socket.io.js"></script>
-    <script src="./js/photogrid_utils.js"></script>
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/css/style.css">
+    <script src="/js/jquery-2.1.4.min.js"></script>
+    <script src="/js/bootstrap.min.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="/js/photogrid_utils.js"></script>
     <script>
     $(function () {
         var host = <%- JSON.stringify(host) %>;
@@ -48,7 +48,7 @@
                         str += '<p><img src="/img/voteup.png" alt="Click Here to Vote Up !">';
                         str += '<span>' + imageList[i].votes + '</span></p>';
                         str += '</a>';
-                        str += '<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#myModal" id="saveButton" data-photoid="' + imageList[i]._id + '">Save</button>';
+                        str += '<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#myModal" id="saveButton" data-photofilename="' + imageList[i].filename + '">Save</button>';
                         str += '</div>';
                         str += '</div>';
                         str += '</div>';
@@ -113,9 +113,9 @@
 
         // click save button of photo and save to board 
         $(document).on('click', '#saveButton', function (e) {
-        	var selectedphotoId = $(this).data('photoid');
+        	var selectedphotofilename = $(this).data('photofilename');
         	
-        	$('input[name="photoid"]').val(selectedphotoId);
+        	$('input[name="photofilename"]').val(selectedphotofilename);
         	// var selectedBoardId;
 
         	// $('select.form-control.boardlist').change(function () {
@@ -177,7 +177,7 @@
         <div>
             <h1>PicParadise - Home</h1>
         </div>
-        <p class="userName"><%= user.username %></p>
+        <p class="userName"><a href="/<%= user.username %>"><%= user.username %></a></p>
         <a href="/logout" id="logOutBtn">Logout</a>
 
         <div class="controls">
@@ -220,7 +220,7 @@
 	              					<% }); %>
 	                  			<% } %>
 						      </select>
-						      <input type="hidden" name="photoid" value="">
+						      <input type="hidden" name="photofilename" value="">
 						    </div>
 						    <div class="form-group">
 						    	<button type="submit" class="btn btn-danger" id="savetoboardbutton">Save</button>
@@ -273,23 +273,5 @@
         <div class="row">
         </div>
     </div>
-    <script>
-        
-            // var modal = document.getElementById("imageModal");
-            // var img = document.getElementById("myImg");
-            // var modalImg = document.getElementById("img01");
-            // // var captionText = document.getElementById('caption');
-            // img.onclick = function () {
-            //     modal.style.display = "block";
-            //     modalImg.src = this.src;
-            //     modalImg.alt = this.alt;
-            //     // captionText.innerHTML = this.alt;
-            // }
-            // var span = document.getElementsByClassName("close")[0];
-            // span.onclick = function () {
-            //         modal.style.display = "none";
-            // }
-        
-    </script>
 </body>
 </html>

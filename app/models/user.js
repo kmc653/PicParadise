@@ -1,9 +1,10 @@
 var mongoose = require('mongoose'),
-    bcrypt = require('bcrypt');
+    bcrypt = require('bcrypt'),
+    _ = require('underscore');
 
 var userSchema = new mongoose.Schema({
     email: { type: String, required: true, index: { unique: true } },
-    username: {type: String, required: true },
+    username: { type: String, required: true, unique: true },
     password: { type: String, required: true },
     boards: [{
         title: {  type: String, required: true },
@@ -47,6 +48,28 @@ userSchema.methods.isValidPassword = function (password, callback) {
         }
         callback(null, isValid);
     });
+};
+
+// userSchema.methods.generateToken = function (type) {
+//     if(!_.isString(type)) {
+//         return undefined;
+//     }
+
+//     try {
+//         var stringData = JSON.stringify({id: this.get('id'), type: type});
+//         var encryptedData = cryptojs.AES.encrypt()
+//     }
+// }
+
+userSchema.methods.getPinsAmount = function () {
+    var user = this;
+    var amount = 0;
+
+    user.boards.forEach(function (board) {
+        amount += board.pins.length;
+    });
+
+    return amount;
 };
 
 module.exports = userSchema;

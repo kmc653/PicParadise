@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title><%= user.username %> on PicParadise</title>
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/css/style.css">
+    <script src="/js/jquery-2.1.4.min.js"></script>
+    <script src="/js/bootstrap.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <div>
+            <h1><%= user.username %></h1>
+        </div>
+        <div>
+            <ul class="nav nav-tabs">
+                <li role="presentation" class="active"><a href="/<%= user.username %>/boards">Board (<%= user.boards.length %>)</a></li>
+                <li role="presentation"><a href="/<%= user.username %>/pins">Pins (<%= user.getPinsAmount() %>)</a></li>
+                <li role="presentation"><a href="#">Followers</a></li>
+                <li role="presentation"><a href="#">Following</a></li>
+            </ul>
+        </div>
+        <div class="row">
+            <% user.boards.forEach(function (board) { %>
+                <div class="col-sm-6 col-md-3">
+                    <a href="/<%= user.username%>/<%= board.title %>">
+                        <div class="thumbnail">
+                            <img style="height: 200px; width: 100%;" src="https://d1uev2sppo24zv.cloudfront.net/<%= board.pins[0] %>" alt="">
+                            <!-- <img src="https://d1uev2sppo24zv.cloudfront.net/<%= board.pins[1] %>" alt=""> -->
+                            <div class="caption">
+                                <h3><%= board.title.toUpperCase() %></h3>
+                                <% if(board.pins.length === 1) { %>
+                                    <p><%= board.pins.length %> Pin</p>
+                                <% } else { %>
+                                    <p><%= board.pins.length %> Pins</p>
+                                <% } %>
+                            </div>
+                        </div>
+                    </a>
+                    
+                </div>
+            <% }); %>
+        </div>
+    </div>
+</body>
+</html>
