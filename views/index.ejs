@@ -173,13 +173,10 @@
     </script>
 </head>
 <body>
+    <header>
+        <%- include('./layouts/top_nav') %>
+    </header>
     <div>
-        <div>
-            <h1>PicParadise - Home</h1>
-        </div>
-        <p class="userName"><a href="/<%= user.username %>"><%= user.username %></a></p>
-        <a href="/logout" id="logOutBtn">Logout</a>
-
         <div class="controls">
             <input type="file" name="uploadPic" class="uploadPic">
             <button id="doUpload">Upload</button>
@@ -189,16 +186,7 @@
             <h5 class="status"></h5>
         </div>
 
-        <% if (success) { %>
-            <div class="alert alert-success">
-                <%= success %>
-            </div>
-        <% } %>
-        <% if (error) { %>
-            <div class="alert alert-danger">
-                <%= error %>
-            </div>
-        <% } %>
+        <%- include('./shared/messages') %>
 
         <!-- saveModal -->
         <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">

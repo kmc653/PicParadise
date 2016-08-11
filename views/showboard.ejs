@@ -7,8 +7,28 @@
     <link rel="stylesheet" href="/css/style.css">
     <script src="/js/jquery-2.1.4.min.js"></script>
     <script src="/js/bootstrap.min.js"></script>
+    <script>
+        // $(function () {
+        //     var host = <%- JSON.stringify(host) %>
+
+        //     function getVoteAmount () {
+        //         $('.voteAmount').html('');
+
+        //         $.ajax({
+        //             url: host + '/getvotesamount',
+        //             type: "GET",
+        //             success: function (data) {
+
+        //             }
+        //         })
+        //     };
+        // });
+    </script>
 </head>
 <body>
+    <header>
+        <%- include('./layouts/top_nav') %>
+    </header>
     <div class="container">
         <div>
             <h1><%= board.title.toUpperCase() %></h1>
@@ -27,6 +47,7 @@
                         <img src="https://d1uev2sppo24zv.cloudfront.net/<%= pin %>" alt="">
                         
                         <div class="caption">
+                            <p><%=  h.showVotesAmount(pin) %></p>
                         </div>
                     </div>
                 </div>

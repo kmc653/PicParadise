@@ -40,11 +40,11 @@ var findOne = function (body) {
     });
 };
 
-var findOneBoard = function (body, currentUserId) {
+var findOneBoard = function (boardTitle, currentUserId) {
     return new Promise(function (resolve, reject) {
         db.userModel.find({
             '_id': currentUserId,
-            'boards.title' : body.boardName
+            'boards.title' : boardTitle
         }, function (err, user) {
             if (err) { 
                 reject(err);
@@ -136,6 +136,42 @@ var createNewBoard = function (body, currentUserId) {
     });
 }
 
+var editBoard = function (body, currentUserId) {
+    return new Promise(function (resolve, reject) {
+        db.userModel.findById(currentUserId, function (err, user) {
+            if(err) {
+                reject(err);
+            } else {
+                user.boards.forEach(function (board) {
+                    if(board.id === body.boardIdinEditModal) {
+                        board.title = body.boardTitleinEditModal;
+                    }
+                });
+                user.save(function (err) {
+                    if (err) reject(err);
+                });
+                resolve(user);
+            }
+        });
+    })
+}
+
+var deleteBoard = function (boardtitle, currentUserId) {
+    return new Promise(function (resolve, reject) {
+        db.userModel.findByIdAndUpdate(currentUserId, {
+            $pull: {
+                "boards": { title: boardtitle.toLowerCase() }
+            }
+        }, {new: true}, function (err, user) {
+            if (err) {
+                reject(err);
+            } else {
+                resolve(user);
+            }
+        });
+    });
+}
+
 var findById = function (id) {
     return new Promise(function(resolve, reject) {
         db.userModel.findById(id, function (error, user) {
@@ -148,6 +184,42 @@ var findById = function (id) {
     });
 }
 
+var getVotesAmount = function (filename) {
+    return new Promise(function (resolve, reject) {
+        db.picModel.findOne({filename: filename}, function (error, pic) {
+            if(error) {
+                reject(error);
+            } else {
+                resolve(pic.votes);
+            }
+        })
+    });
+    // db.picModel.findOne({'filename': filename}, function (err, pic) {
+    //     if(err) {
+    //         console.log(err);
+    //         return;
+    //     } else {
+    //         amount = pic.votes;
+    //     }
+    // });
+    // debugger;
+
+    // return amount;
+}
+
+var showVotesAmount = function (filename) {
+    var amount = 0;
+
+    return getVotesAmount(filename).then(function(result) {
+        if(result) {
+            amount = result;
+            return amount;
+        }
+    }).catch(function (error) {
+        console.log('Error:', error);
+    });
+
+}
 // // A middleware that checks to see if the user is authenticated & logged in
 // var isAuthenticated = function (req, res, next) {
 //     if (req.isAuthenticated()) {
@@ -163,6 +235,9 @@ module.exports = {
     createNewUser,
     findById,
     findOneBoard,
-    createNewBoard
+    createNewBoard,
+    deleteBoard,
+    showVotesAmount,
+    editBoard
     // isAuthenticated
 }

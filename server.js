@@ -16,6 +16,7 @@ var fs = require('fs');
 var os = require('os');
 var formidable = require('formidable');
 var flash = require('connect-flash');
+var db = require('./app/db');
 // var userRoutes = require('./app/routes/user.js');
 
 app.set('view engine', 'ejs');
@@ -34,6 +35,23 @@ app.use(function (req, res, next) {
 
     next();
 });
+
+app.locals.h = require('./app/helpers');
+// app.locals.getVotesAmount = function (filename) {
+    // var amount = 0;
+    
+    // db.picModel.findOne({'filename': filename}, null, function (err, pic) {
+
+    //     if(err) {
+    //         console.log(err);
+    //         return;
+    //     } else {
+    //         amount = pic.votes;
+    //     }
+    // });
+
+    // return amount;
+// }
 
 var knoxClient = knox.createClient({
     key: config.S3AccessKey,

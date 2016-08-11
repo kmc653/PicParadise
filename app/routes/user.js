@@ -36,70 +36,109 @@ module.exports = function (express, app) {
     });
 
     userRouter.get('/:username', function (req, res) {
-
-        try {
-            db.userModel.findOne({ username: req.params.username }, function (err, user) {
-                if (err) throw new Error(err);
-                res.render('userboards', {
-                    user: user,
-                    host: app.get('host')
+        if(!req.session.user) {
+            res.redirect('/');
+        } else {
+            try {
+                db.userModel.findOne({ username: req.params.username }, function (err, user) {
+                    if (err) throw new Error(err);
+                    res.render('userboards', {
+                        user: user,
+                        host: app.get('host')
+                    });
                 });
-            });
-        }
-        catch (e) {
-            res.send(e.name + ': ' + e.message);
+            }
+            catch (e) {
+                res.send(e.name + ': ' + e.message);
+            }
         }
     });
 
-    userRouter.get('/:username/:boardtitle', function (req, res) {
-        try {
-            db.userModel.findOne({ username: req.params.username }, function (err, user) {
-                if (err) throw new Error(err);
-                
-                user.boards.forEach(function (board) {
-                    if(board.title === req.params.boardtitle) {
-                        res.render('showboard', {
-                            user: user,
-                            board: board
-                        });
-                    }
-                });
-            });
-        }
-        catch (e) {
-            res.send(e.name + ': ' + e.message);
-        }
-    });
+    // userRouter.get('/:username/:boardtitle', function (req, res) {
+    //     if(!req.session.user) {
+    //         res.redirect('/');
+    //     } else {
+    //         try {
+    //             db.userModel.findOne({ username: req.params.username }, function (err, user) {
+    //                 if (err) throw new Error(err);
+                    
+    //                 user.boards.forEach(function (board) {
+    //                     if(board.title === req.params.boardtitle) {
+                            
+    //                         res.render('showboard', {
+    //                             user: user,
+    //                             board: board,
+    //                             host: app.get('host')
+    //                         });
+    //                     }
+    //                 });
+    //             });
+    //         }
+    //         catch (e) {
+    //             res.send(e.name + ': ' + e.message);
+    //         }
+    //     }
+    // });
 
     boardRouter.get('/', function (req, res) {
-        try {
-            db.userModel.findOne({ username: req.params.username }, function (err, user) {
-                if (err) throw new Error(err);
-                res.render('userboards', {
-                    user: user,
-                    host: app.get('host')
+        if(!req.session.user) {
+
+        } else {
+            try {
+                db.userModel.findOne({ username: req.params.username }, function (err, user) {
+                    if (err) throw new Error(err);
+                    res.render('userboards', {
+                        user: user,
+                        host: app.get('host')
+                    });
                 });
-            });
-        }
-        catch (e) {
-            res.send(e.name + ': ' + e.message);
+            }
+            catch (e) {
+                res.send(e.name + ': ' + e.message);
+            }
         }
     });
 
-    pinRouter.get('/', function (req, res) {
-        try {
-            db.userModel.findOne({ username: req.params.username }, function (err, user) {
-                if (err) throw new Error(err);
-                res.render('userboards', {
-                    user: user,
-                    host: app.get('host')
+    boardRouter.get('/:boardtitle', function (req, res) {
+        if(!req.session.user) {
+            res.redirect('/');
+        } else {
+            try {
+                db.userModel.findOne({ username: req.params.username }, function (err, user) {
+                    if (err) throw new Error(err);
+                    
+                    user.boards.forEach(function (board) {
+                        if(board.title === req.params.boardtitle) {
+                            
+                            res.render('showboard', {
+                                user: user,
+                                board: board,
+                                host: app.get('host')
+                            });
+                        }
+                    });
                 });
-            });
-        }
-        catch (e) {
-            res.send(e.name + ': ' + e.message);
+            }
+            catch (e) {
+                res.send(e.name + ': ' + e.message);
+            }
         }
     });
 
-    app.use('/', userRouter);  
+    // pinRouter.get('/', function (req, res) {
+    //     try {
+    //         db.userModel.findOne({ username: req.params.username }, function (err, user) {
+    //             if (err) throw new Error(err);
+    //             res.render('userboards', {
+    //                 user: user,
+    //                 host: app.get('host')
+    //             });
+    //         });
+    //     }
+    //     catch (e) {
+    //         res.send(e.name + ': ' + e.message);
+    //     }
+    // });
+
+    app.use('/', userRouter);
 }
