@@ -18,10 +18,11 @@ module.exports = function (express, app, formidable, fs, os, knoxClient, io) {
         
     router.get('/', function (req, res) {
         if (req.session.user) {
-            var currentUserId = req.session.user._id;
-            db.userModel.findById(currentUserId, function (err, user) {
+            var currentUser = req.session.user;
+            db.userModel.findById(currentUser._id, function (err, user) {
                 if(err) throw err;
                 res.render('index', {
+                    currentUser: currentUser,
                     user: user,
                     host: app.get('host')
                 });
@@ -193,29 +194,45 @@ module.exports = function (express, app, formidable, fs, os, knoxClient, io) {
         var body = _.pick(req.body, 'boardid', 'photofilename');
         var currentUserId = req.session.user._id;
 
-        db.userModel.findOne({
-            _id: currentUserId,
-            "boards._id": body.boardid
-        }, 'boards', function(err, user) {
-            if(err) throw err;
-            
-            user.boards.forEach(function(board, index, array) {
-                if(board._id.toString() === body.boardid) {
-                    if(board.pins.includes(body.photoid)) {
-                        req.flash('error', "You have already saved this picture.");
-                        res.redirect('/');
-                    } else {
-                        user.boards[index].pins.push(body.photofilename);
-                        user.save(function(err) {
-                            if(err) throw err;
+        h.checkIfPin(body.photofilename, currentUserId)
+            .then(function (result) {
+                if(result.length > 0) {
+                    req.flash('error', "You have already pin this picture...");
+                    res.redirect('back');
+                } else {
+                    db.userModel.findOne({
+                        _id: currentUserId,
+                        "boards._id": body.boardid
+                    }, 'boards', function(err, user) {
+                        if(err) throw err;
+                        
+                        user.boards.forEach(function(board, index, array) {
+                            if(board._id.toString() === body.boardid) {
+                                if(board.pins.includes(body.photofilename)) {
+                                    req.flash('error', "You've already saved this picture.");
+                                    res.redirect('back');
+                                } else {
+                                    user.boards[index].pins.push(body.photofilename);
+                                    user.save(function(err) {
+                                        if(err) throw err;
 
-                            req.flash('success', "Picture is saved successfully!");
-                            res.redirect('/');
+                                        req.flash('success', "Picture is saved successfully!");
+                                        res.redirect('/');
+                                    });
+                                }
+                            }
                         });
-                    }
+                    });
                 }
+            }).catch(function (error) {
+                console.log('Error:', error);
             });
-        });
+            
+        
+            
+        
+
+        
 
         // db.userModel.findOneAndUpdate({
         //     _id: currentUserId, "boards._id": body.boardid

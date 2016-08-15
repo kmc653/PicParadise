@@ -75,6 +75,7 @@ var io = require('socket.io')(server);
 require('./app/routes/index.js')(express, app, formidable, fs, os, knoxClient, io);
 require('./app/routes/board.js')(express, app);
 require('./app/routes/user.js')(express, app);
+require('./app/routes/pin.js')(express, app);
 
 server.listen(PORT, function () {
     console.log('PicParadise Running on PORT: ', PORT);

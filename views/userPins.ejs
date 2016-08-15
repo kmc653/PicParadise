@@ -10,11 +10,13 @@
     <script>
     $(function () {
         var host = <%- JSON.stringify(host) %>
+        var user = <%- JSON.stringify(user) %>
 
         $(document).on("click", "#editButton", function () {
             var boardId = $(this).data('boardid');
             var photoFilename = $(this).data('photofilename');
-            // $('input[name="boardIdinEditModal"]').val(boardId);
+            var boardTitle = $(this).data('boardtitle');
+            selectOptions(boardId, boardTitle, photoFilename);
             $('input[name="photoFilenameinEditModal"]').val(photoFilename);
             $('input[name="photoFilenameinDeletePinModal"]').val(photoFilename);
         });
@@ -24,6 +26,18 @@
             
             $('input[name="photofilename"]').val(selectedphotofilename);
         });
+
+        function selectOptions (boardId, boardTitle, filename) {
+            var str = '<option value="' + boardId + '">' + boardTitle + "</option>";
+            
+            user.boards.forEach(function (boardItem) {
+                if(boardItem._id !== boardId) {
+                    str += '<option value="' + boardItem._id + '">' + boardItem.title + '</option>';
+                }
+            });
+
+            $("select").html(str);
+        }
 
         $(document).on({
             mouseover: function () {
@@ -52,41 +66,41 @@
         <%- include('./layouts/top_nav') %>
     </header>
     <div class="container">
-
         <%- include('./shared/messages') %>
 
         <div>
-            <h1><%= board.title.toUpperCase() %></h1>
+            <h1><%= user.username %></h1>
         </div>
         <div>
-            <% if(board.pins.length === 1) { %>
-                <p><%= board.pins.length %> Pin</p>
-            <% } else { %>
-                <p><%= board.pins.length %> Pins</p>
-            <% } %>
+            <ul class="nav nav-tabs">
+                <li role="presentation"><a href="/<%= user.username %>/boards">Board (<%= user.boards.length %>)</a></li>
+                <li role="presentation" class="active"><a href="/<%= user.username %>/pins">Pins (<%= user.getPinsAmount() %>)</a></li>
+                <li role="presentation"><a href="#">Followers</a></li>
+                <li role="presentation"><a href="#">Following</a></li>
+            </ul>
         </div>
         <div class="row">
-            <% board.pins.forEach(function (pin) { %>
-                <div class="col-sm-6 col-md-3">
-                    <div class="thumbnail" id="pinList">
-                        <img src="https://d1uev2sppo24zv.cloudfront.net/<%= pin %>" alt="">
-                        
-                        <div class="caption">
-                            <p>Saved to <a href="/<%= user.username %>/boards/<%= board.title %>"><%= board.title %></a><span class="glyphicon glyphicon-heart" aria-hidden="true" style="float: right;">aaa</span></p>
-                            
-                            <% if(currentUser.username === user.username) { %>
-                                <button type="button" class="btn btn-default" data-toggle="modal" data-target="#myEditModal" id="editButton" data-boardid="<%= board.id%>" data-photofilename="<%= pin %>">Edit</button>
-                            <% } else { %>
-                                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#mySaveModal" id="saveButton" data-photofilename="<%= pin %>">Save</button>
-                            <% } %>
-                            
+            <% user.boards.forEach(function (board) { %>
+                <%  board.pins.forEach(function (pin) { %>
+                    <div class="col-sm-6 col-md-3">
+                        <div class="thumbnail" id="pinList">
+                            <img src="https://d1uev2sppo24zv.cloudfront.net/<%= pin %>" alt="">
+                            <div class="caption">
+                                
+                                <p>Saved to <a href="/<%= user.username %>/boards/<%= board.title %>"><%= board.title %></a><span class="glyphicon glyphicon-heart" aria-hidden="true" style="float: right;">a</span></p>
+
+                                <% if(currentUser.username === user.username) { %>
+                                    <button type="button" class="btn btn-default" data-toggle="modal" data-target="#myEditModal" id="editButton" data-photofilename="<%= pin %>" data-boardid="<%=  board.id %>" data-boardtitle="<%= board.title %>">Edit</button>
+                                <% } else { %>
+                                    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#mySaveModal" id="saveButton" data-photofilename="<%= pin %>">Save</button>
+                                <% } %>
+                            </div>
                         </div>
                     </div>
-                </div>
+                <% }); %>
             <% }); %>
         </div>
     </div>
-
     <!-- editModal -->
     <div class="modal fade" id="myEditModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
         <div class="modal-dialog" role="document">
@@ -101,12 +115,6 @@
                         <div class="form-group">
                             <label>Board</label>
                             <select class="form-control" name="boardid">
-                                <option value="<%= board.id %>"><%= board.title %></option>
-                                <% user.boards.forEach(function (boardItem) { %>
-                                    <%  if(boardItem.id !== board.id) { %>
-                                        <option value="<%= boardItem.id %>"><%= boardItem.title %></option>
-                                    <% } %>
-                                <% }) %>
                             </select>
                             <input type="hidden" name="photoFilenameinEditModal" value="">
                         </div>

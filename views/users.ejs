@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>PicParadise - Home</title>
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/css/style.css">
+    <script src="/js/jquery-2.1.4.min.js"></script>
+    <script src="/js/bootstrap.min.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="/js/photogrid_utils.js"></script>
+</head>
+<body>
+    <header>
+        <%- include('./layouts/top_nav') %>
+    </header>
+    <div class="container">    
+        <div>
+            <%- include('./shared/messages') %>
+            <h3>All Users</h3>
+        </div>
+        <div class="row">
+            <ul>
+                <% if(users) { %>
+                    <%  users.forEach(function (user) { %>
+                        <li><a href="/<%= user.username %>"><%= user.username %></a></li>
+                    <% }); %>
+                <% } %>
+            </ul>
+        </div>
+    </div>
+</body>
+</html>

@@ -25,6 +25,19 @@ var db = require('../db');
 //     return router;
 // }
 
+// Find all users
+var findAllUsers = function () {
+    return new Promise(function (resolve, reject) {
+        db.userModel.find({}, function (err, users) {
+            if(err) {
+                reject(err);
+            } else {
+                resolve(users);
+            }
+        })
+    });
+}
+
 // Find a single user based on a key
 var findOne = function (body) {
     return new Promise(function (resolve, reject) {
@@ -172,6 +185,30 @@ var deleteBoard = function (boardtitle, currentUserId) {
     });
 }
 
+var editPin = function (boardId, photoFilename, user) {
+    var newUser = deletePin(photoFilename, user);
+
+    newUser.boards.forEach(function (board) {
+        if(board.id === boardId) {
+            board.pins.push(photoFilename);
+        }
+    });
+
+    return newUser;
+}
+
+var deletePin = function (photoFilename, user) {
+    user.boards.forEach(function (board) {
+        var index = board.pins.indexOf(photoFilename);
+
+        if(index !== -1) {
+            var remove = board.pins.splice(index, 1);
+            console.log(remove);
+        }
+    });
+    return user;
+}
+
 var findById = function (id) {
     return new Promise(function(resolve, reject) {
         db.userModel.findById(id, function (error, user) {
@@ -184,40 +221,39 @@ var findById = function (id) {
     });
 }
 
-var getVotesAmount = function (filename) {
+var checkIfPin = function (filename, userId) {
+    return new Promise(function (resolve, reject) {
+        var user = db.userModel.find({ $and: [ { _id: userId }, { "boards.pins": filename } ]}).limit(1);
+
+        user.exec(function (err, user) {
+            if(err) {
+                reject(err);
+            } else {
+                resolve(user);
+            }
+        })
+    });
+}
+
+var getPinObject = function (filename) {
     return new Promise(function (resolve, reject) {
         db.picModel.findOne({filename: filename}, function (error, pic) {
             if(error) {
                 reject(error);
             } else {
-                resolve(pic.votes);
+                resolve(pic);
             }
         })
     });
-    // db.picModel.findOne({'filename': filename}, function (err, pic) {
-    //     if(err) {
-    //         console.log(err);
-    //         return;
-    //     } else {
-    //         amount = pic.votes;
-    //     }
-    // });
-    // debugger;
-
-    // return amount;
 }
 
 var showVotesAmount = function (filename) {
-    var amount = 0;
-
-    return getVotesAmount(filename).then(function(result) {
-        if(result) {
-            amount = result;
-            return amount;
-        }
-    }).catch(function (error) {
-        console.log('Error:', error);
+    
+    getPinObject(filename).then(function (pin) {
+        var myVote = new Vote(pin.votes);
     });
+
+    return myVote.get_amount();
 
 }
 // // A middleware that checks to see if the user is authenticated & logged in
@@ -231,13 +267,18 @@ var showVotesAmount = function (filename) {
 
 module.exports = {
     // route,
+    findAllUsers,
     findOne,
     createNewUser,
     findById,
     findOneBoard,
     createNewBoard,
     deleteBoard,
-    showVotesAmount,
-    editBoard
+    // getPinObject,
+    // showVotesAmount,
+    editBoard,
+    checkIfPin,
+    deletePin,
+    editPin
     // isAuthenticated
 }

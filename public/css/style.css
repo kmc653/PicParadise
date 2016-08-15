@@ -15,7 +15,25 @@
 
 #photoList #saveButton {
     position: absolute;
-    bottom: 32px;
+    bottom: 35px;
+    display: none;
+}
+
+#pinList {
+    position: relative;
+}
+
+#pinList #editButton {
+    position: absolute;
+    left: 7px;
+    bottom: 25px;
+    display: none;
+}
+
+#pinList #saveButton {
+    position: absolute;
+    left: 7px;
+    bottom: 25px;
     display: none;
 }
 

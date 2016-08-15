@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title><%= user.username %> on PicParadise</title>
+    <title><%= currentUser.username %> on PicParadise</title>
     <link rel="stylesheet" href="/css/bootstrap.min.css">
     <link rel="stylesheet" href="/css/style.css">
     <script src="/js/jquery-2.1.4.min.js"></script>
@@ -18,18 +18,7 @@
             $('input[name="boardTitleinEditModal"]').val(boardTitle);
             $('input[name="boardIdinEditModal"]').val(boardId);
             $('input[name="boardTitleinDeleteBoardModel"]').val(boardTitle);
-            // $('#DeleteBoardButton').click(function() {
-            //     $.ajax({
-            //         url: host + '/' + boardTitle,
-            //         type: "DELETE",
-            //         success: function (result) {
-            //             console.log("mission completed!");
-            //         },
-            //         error: function (error) {
-            //             console.log(error);
-            //         }
-            //     });
-            // });
+    
             return false;
         });
     });
@@ -69,7 +58,9 @@
                             <% } %>
                         </div>
                         </a>
-                        <button type="button" class="btn btn-default btn-lg" data-toggle="modal" data-target="#myModal" id="editButton" data-boardtitle="<%= board.title%>" data-boardid="<%=  board._id %>">Edit</button>
+                        <% if(currentUser.username === user.username) { %>
+                            <button type="button" class="btn btn-default" data-toggle="modal" data-target="#myModal" id="editButton" data-boardtitle="<%= board.title%>" data-boardid="<%=  board._id %>">Edit</button>
+                        <% } %>
                     </div>
                 </div>
             <% }); %>
