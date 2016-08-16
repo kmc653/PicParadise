@@ -74,27 +74,19 @@ module.exports = function (express, app) {
         }
     });
 
-    userRouter.post('/followboard/:boardId', function (req, res) {
-        try {
-            db.userModel.findByIdAndUpdate(req.session.user._id, {
-                $push: {
-                    "followingBoard": req.params.boardId
-                }
-            }, {new: true}, function (err, user) {
-                if (err) {
-                    throw new Error(err);
-                } else {
-                    req.session.user = user;
-                    res.end();
-                }
+    userRouter.post('/followboard', function (req, res) {
+        h.followBoard(req.body.boardId, req.session.user._id)
+            .then(function (user) {
+                req.session.user = user;
+                res.end();
+            })
+            .catch(function (error) {
+                console.log("Error when follow board: ", error);
             });
-        }catch (e) {
-            res.send(e.name + ': ' + e.message);
-        }
     });
 
-    userRouter.post('/unfollowboard/:boardId', function (req, res) {
-        h.unfollowBoard(req.params.boardId, req.session.user._id)
+    userRouter.post('/unfollowboard', function (req, res) {
+        h.unfollowBoard(req.body.boardId, req.session.user._id)
             .then(function (user) {
                 req.session.user = user;
                 res.end();

@@ -25,10 +25,15 @@
         $(document).on("click", ".follow", function () {
             var that = $(this);
             var boardId = that.data('boardid');
+            var ownerId = that.data('ownerid');
 
             $.ajax({
-                url: host + '/followboard/' + boardId,
+                url: host + '/followboard',
                 type: 'POST',
+                data: {
+                    boardId: boardId,
+                    ownerId: ownerId
+                },
                 success: function () {
                     that.prop('class', 'btn btn-default unfollow').html('Unfollow');
                 },
@@ -41,10 +46,15 @@
         $(document).on("click", ".unfollow", function () {
             var that = $(this);
             var boardId = that.data('boardid');
+            var ownerId = that.data('ownerid');
 
             $.ajax({
-                url: host + '/unfollowboard/' + boardId,
+                url: host + '/unfollowboard',
                 type: 'POST',
+                data: {
+                    boardId: boardId,
+                    ownerId: ownerId
+                },
                 success: function () {
                     that.prop('class', 'btn btn-danger follow').html('Follow');
                 },
@@ -90,9 +100,9 @@
                         </div>
                         </a>
                         <% if(currentUser.username === user.username) { %>
-                            <button type="button" class="btn btn-default" data-toggle="modal" data-target="#myModal" id="editButton" data-boardtitle="<%= board.title%>" data-boardid="<%=  board._id %>" style="width: 100%;">Edit</button>
+                            <button type="button" class="btn btn-default" data-toggle="modal" data-target="#myModal" id="editButton" data-ownerid="<%= user._id %>" data-boardid="<%=  board._id %>" style="width: 100%;">Edit</button>
                         <% } else { %>
-                            <button type="button" class="btn btn-danger follow" id="followButton" data-boardtitle="<%= board.title %>" data-boardid="<%=  board._id %>" style="width: 100%;">Follow</button>
+                            <button type="button" class="btn btn-danger follow" id="followButton" data-ownerid="<%= user._id %>" data-boardid="<%=  board._id %>" style="width: 100%;">Follow</button>
                         <% } %>
                     </div>
                 </div>

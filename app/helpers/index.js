@@ -185,6 +185,22 @@ var deleteBoard = function (boardtitle, currentUserId) {
     });
 }
 
+var followBoard = function (boardId, currentUserId) {
+    return new Promise(function (resolve, reject) {
+        db.userModel.findByIdAndUpdate(currentUserId, {
+            $push: {
+                "followingBoard": boardId
+            }
+        }, {new: true}, function (err, user) {
+            if (err) {
+                throw new Error(err);
+            } else {
+                resolve(user);
+            }
+        });
+    })
+}
+
 var unfollowBoard = function (boardId, currentUserId) {
     return new Promise(function (resolve, reject) {
         db.userModel.findByIdAndUpdate(currentUserId, {
@@ -287,6 +303,7 @@ module.exports = {
     findOneBoard,
     createNewBoard,
     deleteBoard,
+    followBoard,
     unfollowBoard,
     // getPinObject,
     // showVotesAmount,
