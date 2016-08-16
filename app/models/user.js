@@ -8,9 +8,10 @@ var userSchema = new mongoose.Schema({
     password: { type: String, required: true },
     boards: [{
         title: {  type: String, required: true },
-        pins: []
-    }]
-    
+        pins: [],
+        follower: []
+    }],
+    followingBoard:[]
 });
 
 // userSchema.path('email').validate(function (email) {

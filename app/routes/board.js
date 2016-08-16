@@ -20,6 +20,8 @@ module.exports = function (express, app) {
                 } else {
                     h.createNewBoard(body, currentUser._id)
                         .then(function (result) {
+
+                            req.session.user = result;
                             req.flash('success', "Board is created successfully!");
                             res.redirect('/' + currentUser.username);
                         })
@@ -39,6 +41,7 @@ module.exports = function (express, app) {
 
         h.editBoard(body, currentUser._id)
             .then(function(user) {
+                req.session.user = user;
                 req.flash('success', "Board has been edited!");
                 res.redirect('/' + currentUser.username);
             }).catch(function(error) {
@@ -65,6 +68,7 @@ module.exports = function (express, app) {
 
         h.deleteBoard(body.boardTitleinDeleteBoardModel, currentUser._id)
             .then(function (result) {
+                req.session.user = result;
                 req.flash('success', "Board has been deleted!");
                 res.redirect('/' + currentUser.username);
             }).catch(function (error) {

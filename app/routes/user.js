@@ -74,6 +74,36 @@ module.exports = function (express, app) {
         }
     });
 
+    userRouter.post('/followboard/:boardId', function (req, res) {
+        try {
+            db.userModel.findByIdAndUpdate(req.session.user._id, {
+                $push: {
+                    "followingBoard": req.params.boardId
+                }
+            }, {new: true}, function (err, user) {
+                if (err) {
+                    throw new Error(err);
+                } else {
+                    req.session.user = user;
+                    res.end();
+                }
+            });
+        }catch (e) {
+            res.send(e.name + ': ' + e.message);
+        }
+    });
+
+    userRouter.post('/unfollowboard/:boardId', function (req, res) {
+        h.unfollowBoard(req.params.boardId, req.session.user._id)
+            .then(function (user) {
+                req.session.user = user;
+                res.end();
+            })
+            .catch(function (error) {
+                console.log("Error when unfollow board: ", error);
+            });
+    })
+
     // userRouter.get('/:username/:boardtitle', function (req, res) {
     //     if(!req.session.user) {
     //         res.redirect('/');

@@ -16,6 +16,7 @@ module.exports = function (express, app) {
                 newUser.save(function (err) {
                     if(err) throw new Error();
 
+                    req.session.user = newUser;
                     req.flash('success', "Picture has been edited.");
                     res.redirect('back');
                 });
@@ -36,6 +37,7 @@ module.exports = function (express, app) {
                 newUser.save(function (err) {
                     if(err) throw new Error();
 
+                    req.session.user = newUser;
                     req.flash('success', "Picture has been deleted!");
                     res.redirect('back');
                 });

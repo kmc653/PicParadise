@@ -21,6 +21,38 @@
     
             return false;
         });
+
+        $(document).on("click", ".follow", function () {
+            var that = $(this);
+            var boardId = that.data('boardid');
+
+            $.ajax({
+                url: host + '/followboard/' + boardId,
+                type: 'POST',
+                success: function () {
+                    that.prop('class', 'btn btn-default unfollow').html('Unfollow');
+                },
+                error: function (error) {
+                    console.log(error);
+                }
+            });
+        });
+
+        $(document).on("click", ".unfollow", function () {
+            var that = $(this);
+            var boardId = that.data('boardid');
+
+            $.ajax({
+                url: host + '/unfollowboard/' + boardId,
+                type: 'POST',
+                success: function () {
+                    that.prop('class', 'btn btn-danger follow').html('Follow');
+                },
+                error: function (error) {
+                    console.log(error);
+                }
+            });
+        });
     });
     </script>
 </head>
@@ -30,7 +62,6 @@
     </header>
     <div class="container">
         <%- include('./shared/messages') %>
-
         <div>
             <h1><%= user.username %></h1>
         </div>
@@ -59,7 +90,9 @@
                         </div>
                         </a>
                         <% if(currentUser.username === user.username) { %>
-                            <button type="button" class="btn btn-default" data-toggle="modal" data-target="#myModal" id="editButton" data-boardtitle="<%= board.title%>" data-boardid="<%=  board._id %>">Edit</button>
+                            <button type="button" class="btn btn-default" data-toggle="modal" data-target="#myModal" id="editButton" data-boardtitle="<%= board.title%>" data-boardid="<%=  board._id %>" style="width: 100%;">Edit</button>
+                        <% } else { %>
+                            <button type="button" class="btn btn-danger follow" id="followButton" data-boardtitle="<%= board.title %>" data-boardid="<%=  board._id %>" style="width: 100%;">Follow</button>
                         <% } %>
                     </div>
                 </div>
