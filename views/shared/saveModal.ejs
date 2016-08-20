@@ -6,8 +6,8 @@
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
                 <h3 class="modal-title" id="myModalLabel">Pick a board</h3>
             </div>
-            <div class="modal-body">
-                <form role="form" action='/savephoto' method="POST">
+            <form role="form" action='/savephoto' method="POST">
+                <div class="modal-body">
                     <div class="form-group">
                       <label>Boards list (select one):</label>
                       <select class="form-control boardlist" name="boardid">
@@ -20,17 +20,13 @@
                       </select>
                       <input type="hidden" name="photofilename" value="">
                     </div>
-                    <div class="form-group">
-                        <button type="submit" class="btn btn-danger" id="savetoboardbutton">Save</button>
-                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                    </div>
-                 </form>
-                
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#CreateBoardModel">Create a Board</button>
-                
-            </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#CreateBoardModal" style="float: left;">Create a Board</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-danger" id="savetoboardbutton">Save</button>
+                </div>
+            </form>
         </div>
     </div>
 </div>

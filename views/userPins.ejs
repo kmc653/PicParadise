@@ -7,6 +7,8 @@
     <link rel="stylesheet" href="/css/style.css">
     <script src="/js/jquery-2.1.4.min.js"></script>
     <script src="/js/bootstrap.min.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="/js/photogrid_utils.js"></script>
     <script>
     $(function () {
         var host = <%- JSON.stringify(host) %>
@@ -57,6 +59,87 @@
                 $(this).find('#saveButton').hide();
             }
         }, '#pinList');
+
+        function upLoadNow () {
+            $('.progress-bar').text('0%');
+            $('.progress-bar').width('0%');
+            // $('.progress').fadeIn(100);
+            var uploadURL = host + '/upload';
+            var uploadFile = $('.uploadPic');
+
+            if(uploadFile.val() != '') {
+                var form = new FormData();
+                form.append("upload", uploadFile[0].files[0]);
+
+                $.ajax({
+                    url: uploadURL,
+                    type: 'POST',
+                    data: form,
+                    processData: false,
+                    contentType: false,
+                    success: function (data) {
+                        uploadFile.val('');
+                        $('#AddPinModal').modal('hide');
+                        $('#mySaveModal').modal('show');
+                    },
+                    xhr: function () {
+                        var xhr = new XMLHttpRequest();
+
+                        xhr.upload.addEventListener('progress', function (evt) {
+
+                            if(evt.lengthComputable) {
+                                var percentComplete = evt.loaded / evt.total;
+                                percentComplete = parseInt(percentComplete * 100);
+
+                                $('.progress-bar').text(percentComplete + '%');
+                                $('.progress-bar').width(percentComplete + '%');
+
+                                if(percentComplete === 100) {
+                                    $('.progress-bar').html('Done');
+                                }
+                            }
+
+                        }, false);
+
+                        return xhr;
+                    }
+                });
+                // // Perform the AJAX POST requrest and send the file
+                // ajax({
+                //     method: 'post',
+                //     url: uploadURL,
+                //     success: function (data) {
+                //         debugger;
+                //         $('.progress').fadeOut(200);
+                //         uploadFile.val('');
+                //         // $('input[name="photofilename"]').val(JSON.parse(data));
+                //         $('#AddPinModal').modal('hide');
+                //         $('#mySaveModal').modal('show');
+                //     },
+                //     progress: function (event) {
+                //         if(event.lengthComputable) {
+                //             var perc = Math.round((event.loaded * 100) / event.total);
+                //             $('.progress').css('width', (perc + '%'))
+                //         }
+                //     },
+                //     payload: form
+                // });
+            }
+        }
+
+        $(document).on('click', '#doUpload', function () {
+            upLoadNow();
+        });
+
+        var socket = io(host);
+
+        socket.on('status', function (data) {
+            showStatus(data.msg, data.delay);
+        });
+
+        socket.on('doUpdate', function (data) {
+            $('input[name="photofilename"]').val(data.filename);
+        });
         
     });
     </script>
@@ -80,6 +163,13 @@
             </ul>
         </div>
         <div class="row">
+            <% if(currentUser.username === user.username) { %>
+                <div class="col-sm-6 col-md-3">
+                    <div class="thumbnail">
+                        <button type="button" style="height: 338px; width: 100%;" data-toggle="modal" data-target="#AddPinModal"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span><h5>Create a pin</h5></button>
+                    </div>
+                </div>
+            <% } %>
             <% user.boards.forEach(function (board) { %>
                 <%  board.pins.forEach(function (pin) { %>
                     <div class="col-sm-6 col-md-3">
@@ -153,5 +243,6 @@
     
     <%- include('./shared/saveModal') %>
     <%- include('./shared/createBoardModal') %>
+    <%- include('./shared/addPinModal') %>
 </body>
 </html>

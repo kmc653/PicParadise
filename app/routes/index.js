@@ -113,8 +113,7 @@ module.exports = function (express, app, formidable, fs, os, knoxClient, io) {
     });
 
     router.post('/upload', function (req, res) {
-        
-        var userid = req.session.user._id;
+        var userId = req.session.user._id;
 
         function generateFilename (filename) {
             var ext_regex = /(?:\.([^.]+))?$/;
@@ -156,15 +155,31 @@ module.exports = function (express, app, formidable, fs, os, knoxClient, io) {
                                 var singleImage = db.picModel({
                                     filename: fname,
                                     votes: 0,
-                                    userId: userid
+                                    userId: userId
                                 }).save();
 
+                                // h.findById(userId).then(function (user) {
+                                //     user.boards.forEach(function (board) {
+                                //         if(board.id === body.boardid) {
+                                //             board.pins.push(fname);
+                                //             user.save(function (err) {
+                                //                 if(err) {
+                                //                     throw new Error();
+                                //                 }
+                                //             });
+                                //         }
+                                //     });
+                                // }).catch(function (error) {
+                                //     console.log(error);
+                                // });
                                 Socket.emit('status', {
                                     'msg': 'Save!!',
                                     'delay': 3000
                                 });
 
-                                Socket.emit('doUpdate', {});
+                                Socket.emit('doUpdate', {
+                                    'filename': fname
+                                });
 
                                 fs.unlink(nfile, function () {
                                     console.log('Local file deleted!');
@@ -175,7 +190,7 @@ module.exports = function (express, app, formidable, fs, os, knoxClient, io) {
                     });
                 });
             });
-        })
+        });
     });
 
     router.get('/getimages', function (req, res) {
@@ -217,7 +232,7 @@ module.exports = function (express, app, formidable, fs, os, knoxClient, io) {
                                         if(err) throw err;
 
                                         req.flash('success', "Picture is saved successfully!");
-                                        res.redirect('/');
+                                        res.redirect('back');
                                     });
                                 }
                             }

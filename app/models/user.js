@@ -9,9 +9,9 @@ var userSchema = new mongoose.Schema({
     boards: [{
         title: {  type: String, required: true },
         pins: [],
-        follower: []
+        followers: []
     }],
-    followingBoard:[]
+    followingBoards:[]
 });
 
 // userSchema.path('email').validate(function (email) {

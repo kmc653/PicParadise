@@ -185,31 +185,69 @@ var deleteBoard = function (boardtitle, currentUserId) {
     });
 }
 
-var followBoard = function (boardId, currentUserId) {
+var followBoard = function (boardId, currentUserId, ownerId) {
     return new Promise(function (resolve, reject) {
         db.userModel.findByIdAndUpdate(currentUserId, {
             $push: {
-                "followingBoard": boardId
+                "followingBoards": boardId
             }
         }, {new: true}, function (err, user) {
             if (err) {
-                throw new Error(err);
+                reject(err);
             } else {
-                resolve(user);
+                findById(ownerId).then(function (owner) {
+                    owner.boards.forEach(function (board) {
+                        if(board.id === boardId) {
+                            board.followers.push(currentUserId);
+                            owner.save(function (err) {
+                                if(err) {
+                                    throw new Error(err);
+                                } else {
+                                    resolve(user);
+                                }
+                            })
+                        }
+                    })
+                }).catch(function (error) {
+                    reject(error);
+                });
             }
         });
-    })
+    });
 }
 
-var unfollowBoard = function (boardId, currentUserId) {
+var unfollowBoard = function (boardId, currentUserId, ownerId) {
     return new Promise(function (resolve, reject) {
         db.userModel.findByIdAndUpdate(currentUserId, {
             $pull: {
-                "followingBoard": boardId
+                "followingBoards": boardId
             }
         }, {new: true}, function (err, user) {
-            if(err) reject(err);
-            resolve(user); 
+            if(err) {
+                reject(err);
+            } else {
+                findById(ownerId).then(function (owner) {
+                    owner.boards.forEach(function (board) {
+                        if(board.id === boardId) {
+                            var index = board.followers.indexOf(currentUserId);
+
+                            if(index !== -1) {
+                                var remove = board.followers.splice(index, 1);
+                                console.log(remove);
+                                owner.save(function (err) {
+                                    if(err) {
+                                        throw new Error();
+                                    } else {
+                                        resolve(user);
+                                    }
+                                })
+                            }
+                        }
+                    });
+                }).catch(function (error) {
+                    reject(error);
+                });
+            }
         });
     });
 }

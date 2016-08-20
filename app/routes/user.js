@@ -75,7 +75,7 @@ module.exports = function (express, app) {
     });
 
     userRouter.post('/followboard', function (req, res) {
-        h.followBoard(req.body.boardId, req.session.user._id)
+        h.followBoard(req.body.boardId, req.session.user._id, req.body.ownerId)
             .then(function (user) {
                 req.session.user = user;
                 res.end();
@@ -86,7 +86,7 @@ module.exports = function (express, app) {
     });
 
     userRouter.post('/unfollowboard', function (req, res) {
-        h.unfollowBoard(req.body.boardId, req.session.user._id)
+        h.unfollowBoard(req.body.boardId, req.session.user._id, req.body.ownerId)
             .then(function (user) {
                 req.session.user = user;
                 res.end();

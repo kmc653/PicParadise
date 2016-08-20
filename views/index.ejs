@@ -26,9 +26,9 @@
             showStatus(data.msg, data.delay);
         });
 
-        socket.on('doUpdate', function () {
-            renderList();
-        });
+        // socket.on('doUpdate', function () {
+        //     renderList();
+        // });
 
         function renderList () {
             $('.row').html('');
@@ -48,7 +48,7 @@
                         str += '<p><img src="/img/voteup.png" alt="Click Here to Vote Up !">';
                         str += '<span>' + imageList[i].votes + '</span></p>';
                         str += '</a>';
-                        str += '<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#myModal" id="saveButton" data-photofilename="' + imageList[i].filename + '">Save</button>';
+                        str += '<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#mySaveModal" id="saveButton" data-photofilename="' + imageList[i].filename + '">Save</button>';
                         str += '</div>';
                         str += '</div>';
                         str += '</div>';
@@ -177,79 +177,19 @@
         <%- include('./layouts/top_nav') %>
     </header>
     <div>
-        <div class="controls">
+        <!-- <div class="controls">
             <input type="file" name="uploadPic" class="uploadPic">
             <button id="doUpload">Upload</button>
             <div class="progressBarDiv">
                 <div class="progress"></div>
             </div>
             <h5 class="status"></h5>
-        </div>
+        </div> -->
 
         <%- include('./shared/messages') %>
+        <%- include('./shared/saveModal.ejs') %>
+        <%- include('./shared/createBoardModal.ejs') %>
 
-        <!-- saveModal -->
-        <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
-          	<div class="modal-dialog" role="document">
-            	<div class="modal-content">
-              		<div class="modal-header">
-                		<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                		<h3 class="modal-title" id="myModalLabel">Pick a board</h3>
-              		</div>
-              		<div class="modal-body">
-                		<form role="form" action='/savephoto' method="POST">
-						    <div class="form-group">
-						      <label>Boards list (select one):</label>
-						      <select class="form-control boardlist" name="boardid">
-						        <option value="" disabled selected>Choose a board</option>
-						        <% if(user.boards.length !== 0) { %>
-	              					<% user.boards.forEach(function (board) { %>
-	              						<option value="<%= board._id %>"><%= board.title %></option>
-	              					<% }); %>
-	                  			<% } %>
-						      </select>
-						      <input type="hidden" name="photofilename" value="">
-						    </div>
-						    <div class="form-group">
-						    	<button type="submit" class="btn btn-danger" id="savetoboardbutton">Save</button>
-						    	<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-						    </div>
-						 </form>
-                		
-              		</div>
-		            <div class="modal-footer">
-		            	<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#CreateBoardModel">Create a Board</button>
-		                
-		            </div>
-            	</div>
-          	</div>
-        </div>
-
-        <!-- CreateBoardModel -->
-        <div class="modal fade" id="CreateBoardModel" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
-          	<div class="modal-dialog" role="document">
-            	<div class="modal-content">
-              		<div class="modal-header">
-                		<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                		<h4 class="modal-title" id="myModalLabel">Create a board</h4>
-              		</div>
-	              	<div class="modal-body">
-	                	<form action="/board" method="POST">
-	                    	<div class="form-group">
-	                        	<input type="text" name="boardName" class="form-control" placeholder='Like "Place to Go" or "Furniture"'>
-	                    	</div>
-		                    <div class="form-group">
-		                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-		                        <button type="submit" class="btn btn-primary">Create</button>
-		                    </div>
-	                	</form>
-	              	</div>
-	              	<div class="modal-footer">
-	                
-	              	</div>
-            	</div>
-          	</div>
-        </div>
 
         <!-- ImageModal -->
         <div id="imageModal" class="modal image">
