@@ -23,6 +23,7 @@
             var selectedphotofilename = $(this).data('photofilename');
             
             $('input[name="photofilename"]').val(selectedphotofilename);
+            $('input[name="photoFilenameinCreateBoardModal"]').val(selectedphotofilename);
         });
 
         $(document).on({

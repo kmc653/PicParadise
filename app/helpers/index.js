@@ -114,6 +114,8 @@ var createNewUser = function (body) {
 
 var createNewBoard = function (body, currentUserId) {
     return new Promise(function (resolve, reject) {
+        var boardTitle = body.boardName.toLowerCase();
+        var photoFilename = body.photoFilenameinCreateBoardModal;
         // db.userModel.findById(currentUserId, function (err, user) {
         //     if (err) reject(err);
 
@@ -125,11 +127,24 @@ var createNewBoard = function (body, currentUserId) {
         // });
         db.userModel.findByIdAndUpdate(currentUserId, {
             $push: {
-                "boards": { title: body.boardName.toLowerCase() }
+                "boards": { title: boardTitle }
             }
         }, {new: true}, function (err, user) {
             if (err) {
                 reject(err);
+            } else if(photoFilename.length !== 0) {
+                user.boards.forEach(function (board) {
+                    if(board.title === boardTitle) {
+                        board.pins.push(photoFilename);
+                        user.save(function (err) {
+                            if(err) {
+                                reject(err);
+                            } else {
+                                resolve(user);
+                            }
+                        })
+                    }
+                });
             } else {
                 resolve(user);
             }

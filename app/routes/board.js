@@ -9,9 +9,9 @@ module.exports = function (express, app) {
 
     // Create a board
     router.post('/board', function (req, res) {
-        var body = _.pick(req.body, 'boardName');
+        var body = _.pick(req.body, 'boardName', 'photoFilenameinCreateBoardModal');
         var currentUser = req.session.user;
-
+        debugger;
         h.findOneBoard(body.boardName, currentUser._id)
             .then(function (result) {
                 if (result.length !== 0) {

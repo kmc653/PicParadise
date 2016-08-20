@@ -64,33 +64,33 @@
 
         renderList();
 
-        function upLoadNow () {
-            $('.progress').fadeIn(100);
-            var uploadURL = host + '/upload';
-            var uploadFile = $('.uploadPic');
+        // function upLoadNow () {
+        //     $('.progress').fadeIn(100);
+        //     var uploadURL = host + '/upload';
+        //     var uploadFile = $('.uploadPic');
 
-            if(uploadFile.val() != '') {
-                var form = new FormData();
-                form.append("upload", uploadFile[0].files[0]);
+        //     if(uploadFile.val() != '') {
+        //         var form = new FormData();
+        //         form.append("upload", uploadFile[0].files[0]);
 
-                // Perform the AJAX POST requrest and send the file
-                ajax({
-                    method: 'post',
-                    url: uploadURL,
-                    success: function () {
-                        $('.progress').fadeOut(200);
-                        uploadFile.val('');
-                    },
-                    progress: function (event) {
-                        if(event.lengthComputable) {
-                            var perc = Math.round((event.loaded * 100) / event.total);
-                            $('.progress').css('width', (perc + '%'))
-                        }
-                    },
-                    payload: form
-                });
-            }
-        }
+        //         // Perform the AJAX POST requrest and send the file
+        //         ajax({
+        //             method: 'post',
+        //             url: uploadURL,
+        //             success: function () {
+        //                 $('.progress').fadeOut(200);
+        //                 uploadFile.val('');
+        //             },
+        //             progress: function (event) {
+        //                 if(event.lengthComputable) {
+        //                     var perc = Math.round((event.loaded * 100) / event.total);
+        //                     $('.progress').css('width', (perc + '%'))
+        //                 }
+        //             },
+        //             payload: form
+        //         });
+        //     }
+        // }
 
         // click to vote
         $(document).on('click', '.voteUp', function (e) {
@@ -116,6 +116,7 @@
         	var selectedphotofilename = $(this).data('photofilename');
         	
         	$('input[name="photofilename"]').val(selectedphotofilename);
+            $('input[name="photoFilenameinCreateBoardModal"]').val(selectedphotofilename);
         	// var selectedBoardId;
 
         	// $('select.form-control.boardlist').change(function () {

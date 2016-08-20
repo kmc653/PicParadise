@@ -27,6 +27,7 @@
             var selectedphotofilename = $(this).data('photofilename');
             
             $('input[name="photofilename"]').val(selectedphotofilename);
+            $('input[name="photoFilenameinCreateBoardModal"]').val(selectedphotofilename);
         });
 
         function selectOptions (boardId, boardTitle, filename) {

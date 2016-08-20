@@ -107,7 +107,7 @@
                         </div>
                         </a>
                         <% if(currentUser.username === user.username) { %>
-                            <button type="button" class="btn btn-default" data-toggle="modal" data-target="#myModal" id="editButton" data-ownerid="<%= user._id %>" data-boardid="<%=  board._id %>" style="width: 100%;">Edit</button>
+                            <button type="button" class="btn btn-default" data-toggle="modal" data-target="#myModal" id="editButton" data-boardtitle="<%= board.title %>" data-ownerid="<%= user._id %>" data-boardid="<%=  board._id %>" style="width: 100%;">Edit</button>
                         <% } else if(currentUser.followingBoards.includes(board.id)) { %>
                             <button type="button" class="btn btn-default unfollow" id="followButton" data-ownerid="<%= user._id %>" data-boardid="<%=  board._id %>" style="width: 100%;">Unfollow</button>
                         <% } else { %>
