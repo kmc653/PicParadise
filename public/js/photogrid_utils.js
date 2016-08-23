@@ -27,7 +27,5 @@ $(function(){
 				showStatus('Your Chosen File Is Not Permitted !! Please pick JPG, GIF or PNG files only !', 4000);
 				$(this).val('');
 			}
-		})
-
-
-})
+		});
+});

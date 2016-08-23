@@ -1,0 +1,33 @@
+<!-- editModal -->
+<div class="modal fade" id="editPinModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h3 class="modal-title" id="myModalLabel">Edit this pin</h3>
+            </div>
+            
+            <form role="form" action='/editpin' method="POST">
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label>Board</label>
+                        <select class="form-control" name="boardid">
+                            <option value="<%= board.id %>"><%= board.title %></option>
+                            <% user.boards.forEach(function (boardItem) { %>
+                                <%  if(boardItem.id !== board.id) { %>
+                                    <option value="<%= boardItem.id %>"><%= boardItem.title %></option>
+                                <% } %>
+                            <% }) %>
+                        </select>
+                        <input type="hidden" name="photoFilenameinEditModal" value="">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-toggle="modal" data-target="#DeletePinModel" style="float: left;">Delete Pin</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-danger" id="savetoboardbutton">Edit</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

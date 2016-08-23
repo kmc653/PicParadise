@@ -14,24 +14,47 @@
         var host = <%- JSON.stringify(host) %>;
         var user = <%- JSON.stringify(user) %>;
 
-        // function renderFollowingBoard () {
-        //     $('.row').html('');
+        $(document).on("click", ".follow", function () {
+            var that = $(this);
+            var boardId = that.data('boardid');
+            var ownerId = that.data('ownerid');
 
-        //     $.ajax({
-        //         url: host + '/getfollowingboard/' + user._id,
-        //         type: "GET",
-        //         success: function (data) {
-        //             var boardList = JSON.parse(data);
-        //             console.log(boardList);
+            $.ajax({
+                url: host + '/followboard',
+                type: 'POST',
+                data: {
+                    boardId: boardId,
+                    ownerId: ownerId
+                },
+                success: function () {
+                    that.prop('class', 'btn btn-default unfollow').html('Unfollow');
+                },
+                error: function (error) {
+                    console.log(error);
+                }
+            });
+        });
 
-        //         },
-        //         error: function (error) {
-        //             console.log(error);
-        //         }
-        //     });
-        // }
+        $(document).on("click", ".unfollow", function () {
+            var that = $(this);
+            var boardId = that.data('boardid');
+            var ownerId = that.data('ownerid');
 
-        // renderFollowingBoard();
+            $.ajax({
+                url: host + '/unfollowboard',
+                type: 'POST',
+                data: {
+                    boardId: boardId,
+                    ownerId: ownerId
+                },
+                success: function () {
+                    that.prop('class', 'btn btn-danger follow').html('Follow');
+                },
+                error: function (error) {
+                    console.log(error);
+                }
+            });
+        });
     });
     </script>
 </head>

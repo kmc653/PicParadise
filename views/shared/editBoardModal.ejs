@@ -1,0 +1,27 @@
+<!-- editModal -->
+<div class="modal fade" id="editBoardModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h3 class="modal-title" id="myModalLabel">Edit your board: <span id="showBoardTitle"></span></h3>
+            </div>
+            <form role="form" action='/editboardtitle' method="POST">
+                <div class="modal-body">  
+                    <div class="form-group">
+                      <label>Title</label>
+                      <input type="text" name="boardTitleinEditModal" class="form-control" value=''>
+                      <input type="hidden" name="boardIdinEditModal" value="">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <div class="form-group">
+                        <button type="button" class="btn btn-default" data-toggle="modal" data-target="#DeleteBoardModel" data-boardtitle="" style="float: left;">Delete Board</button>
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-danger" id="savetoboardbutton">Edit</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

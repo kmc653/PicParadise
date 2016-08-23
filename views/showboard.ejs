@@ -76,7 +76,7 @@
                             <p>Saved to <a href="/<%= user.username %>/boards/<%= board.title %>"><%= board.title %></a><span class="glyphicon glyphicon-heart" aria-hidden="true" style="float: right;"><%= pin.votes %></span></p>
                             
                             <% if(currentUser.username === user.username) { %>
-                                <button type="button" class="btn btn-default" data-toggle="modal" data-target="#myEditModal" id="editButton" data-boardid="<%= board.id%>" data-photofilename="<%= pin.filename %>">Edit</button>
+                                <button type="button" class="btn btn-default" data-toggle="modal" data-target="#editPinModal" id="editButton" data-boardid="<%= board.id%>" data-photofilename="<%= pin.filename %>">Edit</button>
                             <% } else { %>
                                 <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#mySaveModal" id="saveButton" data-photofilename="<%= pin.filename %>">Save</button>
                             <% } %>
@@ -87,63 +87,8 @@
             <% }); %>
         </div>
     </div>
-
-    <!-- editModal -->
-    <div class="modal fade" id="myEditModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                    <h3 class="modal-title" id="myModalLabel">Edit this pin</h3>
-                </div>
-                
-                <form role="form" action='/editpin' method="POST">
-                    <div class="modal-body">
-                        <div class="form-group">
-                            <label>Board</label>
-                            <select class="form-control" name="boardid">
-                                <option value="<%= board.id %>"><%= board.title %></option>
-                                <% user.boards.forEach(function (boardItem) { %>
-                                    <%  if(boardItem.id !== board.id) { %>
-                                        <option value="<%= boardItem.id %>"><%= boardItem.title %></option>
-                                    <% } %>
-                                <% }) %>
-                            </select>
-                            <input type="hidden" name="photoFilenameinEditModal" value="">
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-default" data-toggle="modal" data-target="#DeletePinModel" style="float: left;">Delete Pin</button>
-                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                        <button type="submit" class="btn btn-danger" id="savetoboardbutton">Edit</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-
-    <!-- deletePinModel -->
-    <div class="modal fade" tabindex="-1" role="dialog" id="DeletePinModel">
-      <div class="modal-dialog" role="document">
-        <div class="modal-content">
-          <div class="modal-header">
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-            <h4 class="modal-title">Are you sure?</h4>
-          </div>
-          <div class="modal-body">
-            <p>Once you delete a Pin, you can't undo it!</p>
-          </div>
-          <div class="modal-footer">
-            <form action="/deletepin" method="POST">
-                <input type="hidden" name="photoFilenameinDeletePinModal" value="">
-                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                <button type="submit" class="btn btn-danger">Delete pin</button>
-            </form>
-          </div>
-        </div><!-- /.modal-content -->
-      </div><!-- /.modal-dialog -->
-    </div><!-- /.modal -->
-    
+    <%- include('./shared/editPinModal') %>
+    <%- include('./shared/deletePinModal') %>
     <%- include('./shared/saveModal') %>
     <%- include('./shared/createBoardModal') %>
 </body>

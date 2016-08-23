@@ -122,32 +122,37 @@ var createNewBoard = function (body, currentUserId) {
             _creator: currentUserId,
         });
 
+        var saveNewBoard = function (board) {
+            board.save(function (err) {
+                if(err) {
+                    reject(err);
+                } else {
+                    findById(currentUserId).then(function (user) {
+                        user.boards.push(board);
+                        user.save(function (err) {
+                            if(err) {
+                                reject(err);
+                            } else {
+                                resolve(user);
+                            }
+                        })
+                    })
+                }
+            });
+        }
+
         if(photoFilename.length !== 0) {
             db.picModel.findOne({ filename: photoFilename }, function (err, picture) {
                 if(err) {
                     reject(err);
                 } else {
                     newBoard.pins.push(picture);
+                    saveNewBoard(newBoard);
                 }
             });
+        } else {
+            saveNewBoard(newBoard)
         }
-        
-        newBoard.save(function (err) {
-            if(err) {
-                reject(err);
-            } else {
-                findById(currentUserId).then(function (user) {
-                    user.boards.push(newBoard);
-                    user.save(function (err) {
-                        if(err) {
-                            reject(err);
-                        } else {
-                            resolve(user);
-                        }
-                    })
-                })
-            }
-        });
     });
 }
 

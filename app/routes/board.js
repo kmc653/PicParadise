@@ -16,7 +16,7 @@ module.exports = function (express, app) {
             .then(function (result) {
                 if (result) {
                     req.flash('error', "This board has already been created. Please try another one.");
-                    res.redirect('/');
+                    res.redirect('back');
                 } else {
                     h.createNewBoard(body, currentUser._id)
                         .then(function (result) {

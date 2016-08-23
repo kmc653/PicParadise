@@ -105,26 +105,6 @@
                         return xhr;
                     }
                 });
-                // // Perform the AJAX POST requrest and send the file
-                // ajax({
-                //     method: 'post',
-                //     url: uploadURL,
-                //     success: function (data) {
-                //         debugger;
-                //         $('.progress').fadeOut(200);
-                //         uploadFile.val('');
-                //         // $('input[name="photofilename"]').val(JSON.parse(data));
-                //         $('#AddPinModal').modal('hide');
-                //         $('#mySaveModal').modal('show');
-                //     },
-                //     progress: function (event) {
-                //         if(event.lengthComputable) {
-                //             var perc = Math.round((event.loaded * 100) / event.total);
-                //             $('.progress').css('width', (perc + '%'))
-                //         }
-                //     },
-                //     payload: form
-                // });
             }
         }
 
@@ -182,9 +162,9 @@
                                 <p>Saved to <a href="/<%= user.username %>/boards/<%= board.title %>"><%= board.title %></a><span class="glyphicon glyphicon-heart" aria-hidden="true" style="float: right;"><%= pin.votes %></span></p>
 
                                 <% if(currentUser.username === user.username) { %>
-                                    <button type="button" class="btn btn-default" data-toggle="modal" data-target="#myEditModal" id="editButton" data-photofilename="<%= pin %>" data-boardid="<%=  board.id %>" data-boardtitle="<%= board.title %>">Edit</button>
+                                    <button type="button" class="btn btn-default" data-toggle="modal" data-target="#myEditModal" id="editButton" data-photofilename="<%= pin.filename %>" data-boardid="<%=  board.id %>" data-boardtitle="<%= board.title %>">Edit</button>
                                 <% } else { %>
-                                    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#mySaveModal" id="saveButton" data-photofilename="<%= pin %>">Save</button>
+                                    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#mySaveModal" id="saveButton" data-photofilename="<%= pin.filename %>">Save</button>
                                 <% } %>
                             </div>
                         </div>
