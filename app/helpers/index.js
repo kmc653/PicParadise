@@ -39,10 +39,10 @@ var findAllUsers = function () {
 }
 
 // Find a single user based on a key
-var findOne = function (body) {
+var findOne = function (email) {
     return new Promise(function (resolve, reject) {
         db.userModel.findOne({
-            'email': body.email
+            'email': email
         }, function (error, user) {
             if (error) {
                 reject(error);
@@ -55,26 +55,26 @@ var findOne = function (body) {
 
 var findOneBoard = function (boardTitle, currentUserId) {
     return new Promise(function (resolve, reject) {
-        db.userModel.find({
-            '_id': currentUserId,
-            'boards.title' : boardTitle
-        }, function (err, user) {
-            if (err) { 
-                reject(err);
-            } else {
-                resolve(user);
-            }
-        });
-        // db.boardModel.findOne({
-        //     'boardName': body.boardName,
-        //     'userId': currentUserId
-        // }, function (error, board) {
-        //     if (error) {
-        //         reject(error);
+        // db.userModel.find({
+        //     '_id': currentUserId,
+        //     'boards.title' : boardTitle
+        // }, function (err, user) {
+        //     if (err) { 
+        //         reject(err);
         //     } else {
-        //         resolve(board);
+        //         resolve(user);
         //     }
         // });
+        db.boardModel.findOne({
+            'title': boardTitle,
+            '_creator': currentUserId
+        }, function (error, board) {
+            if (error) {
+                reject(error);
+            } else {
+                resolve(board);
+            }
+        });
     });
 }
 
@@ -116,154 +116,230 @@ var createNewBoard = function (body, currentUserId) {
     return new Promise(function (resolve, reject) {
         var boardTitle = body.boardName.toLowerCase();
         var photoFilename = body.photoFilenameinCreateBoardModal;
-        // db.userModel.findById(currentUserId, function (err, user) {
-        //     if (err) reject(err);
-
-        //     user.boards = body.boardName;
-        //     user.save(function (err) {
-        //         if (err) reject(err);
-        //     });
-        //     resolve(user);
-        // });
-        db.userModel.findByIdAndUpdate(currentUserId, {
-            $push: {
-                "boards": { title: boardTitle }
-            }
-        }, {new: true}, function (err, user) {
-            if (err) {
-                reject(err);
-            } else if(photoFilename.length !== 0) {
-                user.boards.forEach(function (board) {
-                    if(board.title === boardTitle) {
-                        board.pins.push(photoFilename);
-                        user.save(function (err) {
-                            if(err) {
-                                reject(err);
-                            } else {
-                                resolve(user);
-                            }
-                        })
-                    }
-                });
-            } else {
-                resolve(user);
-            }
+        
+        var newBoard = new db.boardModel({
+            title: boardTitle,
+            _creator: currentUserId,
         });
 
-        // var newBoard = db.boardModel({
-        //             boardName: body.boardName.toLowerCase(),
-        //             userId: currentUserId
-        // });
-        // newBoard.save(function (error) {
-        //     if(error) {
-        //         reject(error);
+        if(photoFilename.length !== 0) {
+            db.picModel.findOne({ filename: photoFilename }, function (err, picture) {
+                if(err) {
+                    reject(err);
+                } else {
+                    newBoard.pins.push(picture);
+                }
+            });
+        }
+        
+        newBoard.save(function (err) {
+            if(err) {
+                reject(err);
+            } else {
+                findById(currentUserId).then(function (user) {
+                    user.boards.push(newBoard);
+                    user.save(function (err) {
+                        if(err) {
+                            reject(err);
+                        } else {
+                            resolve(user);
+                        }
+                    })
+                })
+            }
+        });
+    });
+}
+
+var editBoard = function (body) {
+    return new Promise(function (resolve, reject) {
+        db.boardModel.findOne({ _id: body.boardIdinEditModal }, function (err, board) {
+            if(err) {
+                reject(err);
+            } else {
+                board.title = body.boardTitleinEditModal;
+
+                board.save(function (err) {
+                    if(err) {
+                        reject(err);
+                    } else {
+                        resolve(board);
+                    }
+                });
+            }
+        });
+    });
+}
+
+var deleteBoard = function (boardId, currentUserId) {
+    return new Promise(function (resolve, reject) {
+        db.boardModel.remove({
+            _id: boardId
+        }, function (err) {
+            if(err) {
+                reject(err);
+            } else {
+                db.userModel.findByIdAndUpdate(currentUserId, {
+                    $pull: {
+                        "boards": boardId
+                    }
+                }, {new: true}, function (err, user) {
+                    if(err) {
+                        reject(err);
+                    } else {
+                        resolve(user);
+                    }
+                });
+            }
+        });
+        // db.userModel.findByIdAndUpdate(currentUserId, {
+        //     $pull: {
+        //         "boards": { title: boardtitle.toLowerCase() }
+        //     }
+        // }, {new: true}, function (err, user) {
+        //     if (err) {
+        //         reject(err);
         //     } else {
-        //         resolve(newBoard);
+        //         resolve(user);
         //     }
         // });
     });
 }
 
-var editBoard = function (body, currentUserId) {
+var followBoard = function (boardId, currentUser, ownerId) {
     return new Promise(function (resolve, reject) {
-        db.userModel.findById(currentUserId, function (err, user) {
+        db.boardModel.findByIdAndUpdate(boardId, {
+            $push: {
+                "followers": currentUser
+            }
+        }, {new: true}, function (err, board) {
             if(err) {
                 reject(err);
             } else {
-                user.boards.forEach(function (board) {
-                    if(board.id === body.boardIdinEditModal) {
-                        board.title = body.boardTitleinEditModal;
+                db.userModel.findByIdAndUpdate(currentUser._id, {
+                    $push: {
+                        "followingBoards": board
+                    }
+                }, {new: true}, function (err, user) {
+                    if(err) {
+                        reject(err);
+                    } else {
+                        resolve(user);
+                    }
+                })
+                // db.userModel.findById(currentUserId, function (err, user) {
+                //     if(err) {
+                //         reject(err);
+                //     } else {
+                //         user.followingBoards.push(board);
+                //         board.followers.push(user);
+
+                //         board.save(function (err) {
+                //             if(err) reject(err);
+                //         });
+
+                //         user.save(function (err) {
+                //             if(err) {
+                //                 reject(err);
+                //             } else {
+                //                 resolve(user);
+                //             }
+                //         });
+                //     }
+                // });
+            }
+        });
+        // findById(ownerId).then(function (owner) {
+        //     owner.boards.forEach(function (board) {
+        //         if(board.id === boardId) {
+        //             db.userModel.findByIdAndUpdate(currentUserId, {
+        //                 $push: {
+        //                     "followingBoards": board
+        //                 }
+        //             }, {new: true}, function (err, user) {
+        //                 if (err) {
+        //                     reject(err);
+        //                 } else {
+                            
+        //                     // findById(ownerId).then(function (owner) {
+        //                     //     owner.boards.forEach(function (board) {
+        //                     //         if(board.id === boardId) {
+        //                     //             board.followers.push(currentUserId);
+        //                     //             owner.save(function (err) {
+        //                     //                 if(err) {
+        //                     //                     throw new Error(err);
+        //                     //                 } else {
+        //                     //                     resolve(user);
+        //                     //                 }
+        //                     //             })
+        //                     //         }
+        //                     //     })
+        //                     // }).catch(function (error) {
+        //                     //     reject(error);
+        //                     // });
+        //                 }
+        //             });
+        //         }
+        //     })
+        // })
+        
+    });
+}
+
+var unfollowBoard = function (boardId, currentUser, ownerId) {
+    return new Promise(function (resolve, reject) {
+        db.boardModel.findByIdAndUpdate(boardId, {
+            $pull: {
+                "followers": currentUser._id
+            }
+        }, {new: true}, function (err, board) {
+            if(err) {
+                reject(err);
+            } else {
+                db.userModel.findByIdAndUpdate(currentUser._id, {
+                    $pull: {
+                        "followingBoards": board._id
+                    }
+                }, {new: true}, function (err, user) {
+                    if(err) {
+                        reject(err);
+                    } else {
+                        resolve(user);
                     }
                 });
-                user.save(function (err) {
-                    if (err) reject(err);
-                });
-                resolve(user);
             }
         });
-    })
-}
+        // db.userModel.findByIdAndUpdate(currentUserId, {
+        //     $pull: {
+        //         "followingBoards": boardId
+        //     }
+        // }, {new: true}, function (err, user) {
+        //     if(err) {
+        //         reject(err);
+        //     } else {
+        //         findById(ownerId).then(function (owner) {
+        //             owner.boards.forEach(function (board) {
+        //                 if(board.id === boardId) {
+        //                     var index = board.followers.indexOf(currentUserId);
 
-var deleteBoard = function (boardtitle, currentUserId) {
-    return new Promise(function (resolve, reject) {
-        db.userModel.findByIdAndUpdate(currentUserId, {
-            $pull: {
-                "boards": { title: boardtitle.toLowerCase() }
-            }
-        }, {new: true}, function (err, user) {
-            if (err) {
-                reject(err);
-            } else {
-                resolve(user);
-            }
-        });
-    });
-}
-
-var followBoard = function (boardId, currentUserId, ownerId) {
-    return new Promise(function (resolve, reject) {
-        db.userModel.findByIdAndUpdate(currentUserId, {
-            $push: {
-                "followingBoards": boardId
-            }
-        }, {new: true}, function (err, user) {
-            if (err) {
-                reject(err);
-            } else {
-                findById(ownerId).then(function (owner) {
-                    owner.boards.forEach(function (board) {
-                        if(board.id === boardId) {
-                            board.followers.push(currentUserId);
-                            owner.save(function (err) {
-                                if(err) {
-                                    throw new Error(err);
-                                } else {
-                                    resolve(user);
-                                }
-                            })
-                        }
-                    })
-                }).catch(function (error) {
-                    reject(error);
-                });
-            }
-        });
-    });
-}
-
-var unfollowBoard = function (boardId, currentUserId, ownerId) {
-    return new Promise(function (resolve, reject) {
-        db.userModel.findByIdAndUpdate(currentUserId, {
-            $pull: {
-                "followingBoards": boardId
-            }
-        }, {new: true}, function (err, user) {
-            if(err) {
-                reject(err);
-            } else {
-                findById(ownerId).then(function (owner) {
-                    owner.boards.forEach(function (board) {
-                        if(board.id === boardId) {
-                            var index = board.followers.indexOf(currentUserId);
-
-                            if(index !== -1) {
-                                var remove = board.followers.splice(index, 1);
-                                console.log(remove);
-                                owner.save(function (err) {
-                                    if(err) {
-                                        throw new Error();
-                                    } else {
-                                        resolve(user);
-                                    }
-                                })
-                            }
-                        }
-                    });
-                }).catch(function (error) {
-                    reject(error);
-                });
-            }
-        });
+        //                     if(index !== -1) {
+        //                         var remove = board.followers.splice(index, 1);
+        //                         console.log(remove);
+        //                         owner.save(function (err) {
+        //                             if(err) {
+        //                                 throw new Error();
+        //                             } else {
+        //                                 resolve(user);
+        //                             }
+        //                         })
+        //                     }
+        //                 }
+        //             });
+        //         }).catch(function (error) {
+        //             reject(error);
+        //         });
+        //     }
+        // });
     });
 }
 
@@ -303,41 +379,73 @@ var findById = function (id) {
     });
 }
 
-var checkIfPin = function (filename, userId) {
+var findByUsername = function (username) {
     return new Promise(function (resolve, reject) {
-        var user = db.userModel.find({ $and: [ { _id: userId }, { "boards.pins": filename } ]}).limit(1);
-
-        user.exec(function (err, user) {
-            if(err) {
-                reject(err);
-            } else {
-                resolve(user);
-            }
-        })
+        db.userModel.findOne({ username: username })
+            .populate({
+                path: 'followingBoards',
+                populate: {
+                    path: '_creator',
+                    select: 'username'
+                }
+            })
+            .populate({
+                path: 'boards',
+                populate: {
+                    path: 'pins'
+                }
+            })
+            .populate({
+                path: 'followingBoards',
+                populate: {
+                    path: 'pins'
+                }
+            })
+            .exec(function (error, user) {
+                if(error) {
+                    reject(error);
+                } else {
+                    resolve(user);
+                }
+            });
     });
 }
 
-var getPinObject = function (filename) {
+var findOwnerByBoardId = function (boardId) {
     return new Promise(function (resolve, reject) {
-        db.picModel.findOne({filename: filename}, function (error, pic) {
+        db.userModel.findOne({ "boards._id": boardId }, function (error, user) {
             if(error) {
                 reject(error);
             } else {
-                resolve(pic);
+                resolve(user);
             }
-        })
+        });
     });
 }
 
-var showVotesAmount = function (filename) {
-    
-    getPinObject(filename).then(function (pin) {
-        var myVote = new Vote(pin.votes);
+var checkIfPin = function (filename, userId) {
+    return new Promise(function (resolve, reject) {
+        db.picModel.findOne({ filename: filename }, function (err, picture) {
+            if(err) {
+                reject(err);
+            } else {
+                db.boardModel.findOne({
+                    _creator: userId,
+                    pins: picture._id
+                }, function (err, board) {
+                    if(err) {
+                        reject(err);
+                    } else if(board) {
+                        reject("You have already save this picture...");
+                    } else {
+                        resolve(picture);
+                    }
+                });
+            }
+        });
     });
-
-    return myVote.get_amount();
-
 }
+
 // // A middleware that checks to see if the user is authenticated & logged in
 // var isAuthenticated = function (req, res, next) {
 //     if (req.isAuthenticated()) {
@@ -353,6 +461,8 @@ module.exports = {
     findOne,
     createNewUser,
     findById,
+    findByUsername,
+    findOwnerByBoardId,
     findOneBoard,
     createNewBoard,
     deleteBoard,

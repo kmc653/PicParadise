@@ -1,18 +1,16 @@
 var mongoose = require('mongoose'),
+    Schema = mongoose.Schema,
     bcrypt = require('bcrypt'),
     _ = require('underscore');
 
-var userSchema = new mongoose.Schema({
+var userSchema = Schema({
     email: { type: String, required: true, index: { unique: true } },
     username: { type: String, required: true, unique: true },
     password: { type: String, required: true },
-    boards: [{
-        title: {  type: String, required: true },
-        pins: [],
-        followers: []
-    }],
-    followingBoards:[]
-});
+    boards: [{ type: Schema.Types.ObjectId, ref: 'board' }],
+    pins: [{ type: Schema.Types.ObjectId, ref: 'picture' }],
+    followingBoards:[{ type: Schema.Types.ObjectId, ref: 'board' }]
+}, { timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' } });
 
 // userSchema.path('email').validate(function (email) {
 //    var emailRegex = /^([\w-\.]+@([\w-]+\.)+[\w-]{2,4})?$/;

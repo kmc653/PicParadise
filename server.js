@@ -16,7 +16,7 @@ var fs = require('fs');
 var os = require('os');
 var formidable = require('formidable');
 var flash = require('connect-flash');
-var db = require('./app/db');
+// var db = require('./app/db');
 // var userRoutes = require('./app/routes/user.js');
 
 app.set('view engine', 'ejs');
@@ -37,21 +37,6 @@ app.use(function (req, res, next) {
 });
 
 app.locals.h = require('./app/helpers');
-// app.locals.getVotesAmount = function (filename) {
-    // var amount = 0;
-    
-    // db.picModel.findOne({'filename': filename}, null, function (err, pic) {
-
-    //     if(err) {
-    //         console.log(err);
-    //         return;
-    //     } else {
-    //         amount = pic.votes;
-    //     }
-    // });
-
-    // return amount;
-// }
 
 var knoxClient = knox.createClient({
     key: config.S3AccessKey,
@@ -72,6 +57,7 @@ var server = require('http').createServer(app);
 var io = require('socket.io')(server);
 
 // app.use('/', photoParadise.router);
+require('./app/db');
 require('./app/routes/index.js')(express, app, formidable, fs, os, knoxClient, io);
 require('./app/routes/board.js')(express, app);
 require('./app/routes/user.js')(express, app);

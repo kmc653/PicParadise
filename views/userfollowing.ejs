@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>PicParadise - Home</title>
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/css/style.css">
+    <script src="/js/jquery-2.1.4.min.js"></script>
+    <script src="/js/bootstrap.min.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="/js/photogrid_utils.js"></script>
+    <script>
+    $(function () {
+        var host = <%- JSON.stringify(host) %>;
+        var user = <%- JSON.stringify(user) %>;
+
+        // function renderFollowingBoard () {
+        //     $('.row').html('');
+
+        //     $.ajax({
+        //         url: host + '/getfollowingboard/' + user._id,
+        //         type: "GET",
+        //         success: function (data) {
+        //             var boardList = JSON.parse(data);
+        //             console.log(boardList);
+
+        //         },
+        //         error: function (error) {
+        //             console.log(error);
+        //         }
+        //     });
+        // }
+
+        // renderFollowingBoard();
+    });
+    </script>
+</head>
+<body>
+    <header>
+        <%- include('./layouts/top_nav') %>
+    </header>
+    <div class="container">
+        <%- include('./shared/messages') %>
+        <div>
+            <h1><%= user.username %></h1>
+        </div>
+        <div>
+            <ul class="nav nav-tabs">
+                <li role="presentation"><a href="/<%= user.username %>/boards">Board (<%= user.boards.length %>)</a></li>
+                <li role="presentation"><a href="/<%= user.username %>/pins">Pins (<%= user.getPinsAmount() %>)</a></li>
+                <li role="presentation"><a href="/<%= user.username %>/followers">Followers</a></li>
+                <li role="presentation" class="active"><a href="/<%= user.username %>/following">Following (<%= user.followingBoards.length %>)</a></li>
+            </ul>
+        </div>
+        <div class="row">
+            <% user.followingBoards.forEach(function (board) { %>
+                <% debugger; %>
+                <div class="col-sm-6 col-md-3">
+                    <div class="thumbnail">
+                        <a href="/<%= board._creator.username %>/boards/<%= board.title %>">
+                        <% if(board.pins.length > 0) { %>
+                            <img style="height: 200px; width: 100%;" src="https://d1uev2sppo24zv.cloudfront.net/<%= board.pins[0].filename %>" alt="">
+                        <% } else { %>
+                            <img style="height: 200px; width: 100%;" src="https://d1uev2sppo24zv.cloudfront.net/white.png" alt="">
+                        <% } %>
+
+                        <div class="caption">
+                            <h3><%= board.title.toUpperCase() %></h3>
+                            <p><%= board._creator.username %>
+                            <% if(board.pins.length === 1) { %>
+                                <span style="float: right;"><%= board.pins.length %> Pin</span>
+                            <% } else { %>
+                                <span style="float: right;"><%= board.pins.length %> Pins</span>
+                            <% } %></p>
+                        </div>
+                        </a>
+                            
+                        <% if(currentUser.followingBoards.includes(board.id)) { %>
+                            <button type="button" class="btn btn-default unfollow" id="followButton" data-ownerid="<%= user._id %>" data-boardid="<%=  board._id %>" style="width: 100%;">Unfollow</button>
+                        <% } else { %>
+                            <button type="button" class="btn btn-danger follow" id="followButton" data-ownerid="<%= user._id %>" data-boardid="<%=  board._id %>" style="width: 100%;">Follow</button>
+                        <% } %>
+                    </div>
+                </div>
+            <% }); %>
+        </div>
+    </div>
+    
+</body>
+</html>

@@ -19,10 +19,13 @@ module.exports = function (express, app, formidable, fs, os, knoxClient, io) {
     router.get('/', function (req, res) {
         if (req.session.user) {
             var currentUser = req.session.user;
-            db.userModel.findById(currentUser._id, function (err, user) {
+            db.userModel.findOne({ _id: currentUser._id }).populate({
+                path: 'boards',
+                populate: { path: 'pins' }
+            }).exec(function (err, user) {
                 if(err) throw err;
                 res.render('index', {
-                    currentUser: currentUser,
+                    currentUser: user,
                     user: user,
                     host: app.get('host')
                 });
@@ -83,7 +86,7 @@ module.exports = function (express, app, formidable, fs, os, knoxClient, io) {
 
         console.log(body);
 
-        h.findOne(body)
+        h.findOne(body.email)
             .then(function (result) {
                 if (result) {
                     result.isValidPassword(body.password, function(err, isValid) {
@@ -113,7 +116,8 @@ module.exports = function (express, app, formidable, fs, os, knoxClient, io) {
     });
 
     router.post('/upload', function (req, res) {
-        var userId = req.session.user._id;
+        
+        var currentUser = req.session.user;
 
         function generateFilename (filename) {
             var ext_regex = /(?:\.([^.]+))?$/;
@@ -155,23 +159,9 @@ module.exports = function (express, app, formidable, fs, os, knoxClient, io) {
                                 var singleImage = db.picModel({
                                     filename: fname,
                                     votes: 0,
-                                    userId: userId
+                                    _creator: currentUser
                                 }).save();
 
-                                // h.findById(userId).then(function (user) {
-                                //     user.boards.forEach(function (board) {
-                                //         if(board.id === body.boardid) {
-                                //             board.pins.push(fname);
-                                //             user.save(function (err) {
-                                //                 if(err) {
-                                //                     throw new Error();
-                                //                 }
-                                //             });
-                                //         }
-                                //     });
-                                // }).catch(function (error) {
-                                //     console.log(error);
-                                // });
                                 Socket.emit('status', {
                                     'msg': 'Save!!',
                                     'delay': 3000
@@ -199,6 +189,23 @@ module.exports = function (express, app, formidable, fs, os, knoxClient, io) {
         });
     });
 
+    // router.get('/getfollowingboard/:userId', function (req, res) {
+    //     var boardList = [];
+
+    //     h.findById(req.params.userId).then(function (user) {
+    //         user.followingBoards.forEach(function (boardId) {
+    //             h.findOwnerByBoardId(boardId).then(function (owner) {
+    //                 owner.boards.forEach(function (board) {
+    //                     if(boardId === board.id) {
+    //                         boardList.push(board);
+    //                     }
+    //                 });
+    //             });
+    //         });
+    //         res.send(JSON.stringify(boardList));
+    //     });
+    // });
+
     router.get('/voteup/:id', function (req, res) {
         db.picModel.findByIdAndUpdate(req.params.id, {$inc:{votes:1}}, {new: true}, function (err, result) {
             res.send(JSON.stringify(result));
@@ -211,36 +218,25 @@ module.exports = function (express, app, formidable, fs, os, knoxClient, io) {
 
         h.checkIfPin(body.photofilename, currentUserId)
             .then(function (result) {
-                if(result.length > 0) {
-                    req.flash('error', "You have already pin this picture...");
-                    res.redirect('back');
-                } else {
-                    db.userModel.findOne({
-                        _id: currentUserId,
-                        "boards._id": body.boardid
-                    }, 'boards', function(err, user) {
-                        if(err) throw err;
-                        
-                        user.boards.forEach(function(board, index, array) {
-                            if(board._id.toString() === body.boardid) {
-                                if(board.pins.includes(body.photofilename)) {
-                                    req.flash('error', "You've already saved this picture.");
-                                    res.redirect('back');
-                                } else {
-                                    user.boards[index].pins.push(body.photofilename);
-                                    user.save(function(err) {
-                                        if(err) throw err;
+                db.boardModel.findOne({ _id: body.boardid }).populate('pins').exec(function (err, board) {
+                    if(err) {
+                        throw new Error(err);
+                    } else {
+                        board.pins.push(result);
 
-                                        req.flash('success', "Picture is saved successfully!");
-                                        res.redirect('back');
-                                    });
-                                }
+                        board.save(function (err) {
+                            if(err) { 
+                                throw new Error(err);
+                            } else {
+                                req.flash('success', "Picture is saved successfully!");
+                                res.redirect('back');
                             }
                         });
-                    });
-                }
+                    }
+                });
             }).catch(function (error) {
-                console.log('Error:', error);
+                req.flash('error', error);
+                res.redirect('back');
             });
             
         

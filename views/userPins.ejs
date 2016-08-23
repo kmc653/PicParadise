@@ -140,6 +140,7 @@
 
         socket.on('doUpdate', function (data) {
             $('input[name="photofilename"]').val(data.filename);
+            $('input[name="photoFilenameinCreateBoardModal"]').val(data.filename);
         });
         
     });
@@ -160,7 +161,7 @@
                 <li role="presentation"><a href="/<%= user.username %>/boards">Board (<%= user.boards.length %>)</a></li>
                 <li role="presentation" class="active"><a href="/<%= user.username %>/pins">Pins (<%= user.getPinsAmount() %>)</a></li>
                 <li role="presentation"><a href="#">Followers</a></li>
-                <li role="presentation"><a href="#">Following</a></li>
+                <li role="presentation"><a href="/<%= user.username %>/following">Following (<%= user.followingBoards.length %>)</a></li>
             </ul>
         </div>
         <div class="row">
@@ -175,10 +176,10 @@
                 <%  board.pins.forEach(function (pin) { %>
                     <div class="col-sm-6 col-md-3">
                         <div class="thumbnail" id="pinList">
-                            <img src="https://d1uev2sppo24zv.cloudfront.net/<%= pin %>" alt="">
+                            <img src="https://d1uev2sppo24zv.cloudfront.net/<%= pin.filename %>" alt="">
                             <div class="caption">
                                 
-                                <p>Saved to <a href="/<%= user.username %>/boards/<%= board.title %>"><%= board.title %></a><span class="glyphicon glyphicon-heart" aria-hidden="true" style="float: right;">a</span></p>
+                                <p>Saved to <a href="/<%= user.username %>/boards/<%= board.title %>"><%= board.title %></a><span class="glyphicon glyphicon-heart" aria-hidden="true" style="float: right;"><%= pin.votes %></span></p>
 
                                 <% if(currentUser.username === user.username) { %>
                                     <button type="button" class="btn btn-default" data-toggle="modal" data-target="#myEditModal" id="editButton" data-photofilename="<%= pin %>" data-boardid="<%=  board.id %>" data-boardtitle="<%= board.title %>">Edit</button>

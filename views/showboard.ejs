@@ -70,15 +70,15 @@
             <% board.pins.forEach(function (pin) { %>
                 <div class="col-sm-6 col-md-3">
                     <div class="thumbnail" id="pinList">
-                        <img src="https://d1uev2sppo24zv.cloudfront.net/<%= pin %>" alt="">
+                        <img src="https://d1uev2sppo24zv.cloudfront.net/<%= pin.filename %>" alt="">
                         
                         <div class="caption">
-                            <p>Saved to <a href="/<%= user.username %>/boards/<%= board.title %>"><%= board.title %></a><span class="glyphicon glyphicon-heart" aria-hidden="true" style="float: right;">aaa</span></p>
+                            <p>Saved to <a href="/<%= user.username %>/boards/<%= board.title %>"><%= board.title %></a><span class="glyphicon glyphicon-heart" aria-hidden="true" style="float: right;"><%= pin.votes %></span></p>
                             
                             <% if(currentUser.username === user.username) { %>
-                                <button type="button" class="btn btn-default" data-toggle="modal" data-target="#myEditModal" id="editButton" data-boardid="<%= board.id%>" data-photofilename="<%= pin %>">Edit</button>
+                                <button type="button" class="btn btn-default" data-toggle="modal" data-target="#myEditModal" id="editButton" data-boardid="<%= board.id%>" data-photofilename="<%= pin.filename %>">Edit</button>
                             <% } else { %>
-                                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#mySaveModal" id="saveButton" data-photofilename="<%= pin %>">Save</button>
+                                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#mySaveModal" id="saveButton" data-photofilename="<%= pin.filename %>">Save</button>
                             <% } %>
                             
                         </div>

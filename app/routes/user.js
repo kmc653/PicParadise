@@ -34,7 +34,7 @@ module.exports = function (express, app) {
     userRouter.post('/users', function (req, res) {
         var body = _.pick(req.body, 'email', 'username', 'password');
 
-        h.findOne(body)
+        h.findOne(body.email)
             .then(function (result) {
                 if(result) {
                     req.flash('error', "This email has been used. Please try another one.");
@@ -44,11 +44,10 @@ module.exports = function (express, app) {
                         .then(function (user) {
                             req.session.user = user;
                             req.flash('success', "Sign up successfully!");
-
                             res.redirect('/');
                         })
                         .catch(function (error) {
-                            console.log("Error when creating new user.");
+                            console.log("Error when creating new user: ", error.message);
                         });
                 }
             });
@@ -59,14 +58,28 @@ module.exports = function (express, app) {
             res.redirect('/');
         } else if(req.params.username !== 'favicon.ico') {
             try {
-                db.userModel.findOne({ username: req.params.username }, function (err, user) {
-                    if (err) throw new Error(err);
-                    res.render('userboards', {
-                        currentUser: req.session.user,
-                        user: user,
-                        host: app.get('host')
-                    });
+                db.userModel.findOne({ username: req.params.username }).populate({
+                    path: 'boards',
+                    populate: { path: 'pins' }
+                }).exec(function (err, user) {
+                    if(err) {
+                        throw new Error();
+                    } else {
+                        res.render('userboards', {
+                            currentUser: req.session.user,
+                            user: user,
+                            host: app.get('host')
+                        });
+                    }
                 });
+                // db.userModel.findOne({ username: req.params.username }, function (err, user) {
+                //     if (err) throw new Error(err);
+                //     res.render('userboards', {
+                //         currentUser: req.session.user,
+                //         user: user,
+                //         host: app.get('host')
+                //     });
+                // });
             }
             catch (e) {
                 res.send(e.name + ': ' + e.message);
@@ -75,7 +88,7 @@ module.exports = function (express, app) {
     });
 
     userRouter.post('/followboard', function (req, res) {
-        h.followBoard(req.body.boardId, req.session.user._id, req.body.ownerId)
+        h.followBoard(req.body.boardId, req.session.user, req.body.ownerId)
             .then(function (user) {
                 req.session.user = user;
                 res.end();
@@ -86,7 +99,7 @@ module.exports = function (express, app) {
     });
 
     userRouter.post('/unfollowboard', function (req, res) {
-        h.unfollowBoard(req.body.boardId, req.session.user._id, req.body.ownerId)
+        h.unfollowBoard(req.body.boardId, req.session.user, req.body.ownerId)
             .then(function (user) {
                 req.session.user = user;
                 res.end();
@@ -94,46 +107,44 @@ module.exports = function (express, app) {
             .catch(function (error) {
                 console.log("Error when unfollow board: ", error);
             });
-    })
+    });
 
-    // userRouter.get('/:username/:boardtitle', function (req, res) {
-    //     if(!req.session.user) {
-    //         res.redirect('/');
-    //     } else {
-    //         try {
-    //             db.userModel.findOne({ username: req.params.username }, function (err, user) {
-    //                 if (err) throw new Error(err);
-                    
-    //                 user.boards.forEach(function (board) {
-    //                     if(board.title === req.params.boardtitle) {
-                            
-    //                         res.render('showboard', {
-    //                             user: user,
-    //                             board: board,
-    //                             host: app.get('host')
-    //                         });
-    //                     }
-    //                 });
-    //             });
-    //         }
-    //         catch (e) {
-    //             res.send(e.name + ': ' + e.message);
-    //         }
-    //     }
-    // });
+    userRouter.get('/:username/following', function (req, res) {
+        if(!req.session.user) {
+            res.redirect('/');
+        } else {
+            h.findByUsername(req.params.username)
+                .then(function (user) {
+                    res.render('userfollowing', {
+                        currentUser: req.session.user,
+                        user: user,
+                        host: app.get('host')
+                    });
+                })
+                .catch(function (error) {
+                    console.log("Error when run following board: ", error);
+                });
+        }
+    });
 
     boardRouter.get('/', function (req, res) {
         if(!req.session.user) {
             res.redirect('/');
         } else if(req.params.username !== 'favicon.ico') {
             try {
-                db.userModel.findOne({ username: req.params.username }, function (err, user) {
-                    if (err) throw new Error(err);
-                    res.render('userboards', {
-                        currentUser: req.session.user,
-                        user: user,
-                        host: app.get('host')
-                    });
+                db.userModel.findOne({ username: req.params.username }).populate({
+                    path: 'boards',
+                    populate: { path: 'pins' }
+                }).exec(function (err, user) {
+                    if(err) {
+                        throw new Error();
+                    } else {
+                        res.render('userboards', {
+                            currentUser: req.session.user,
+                            user: user,
+                            host: app.get('host')
+                        });
+                    }
                 });
             }
             catch (e) {
@@ -147,21 +158,52 @@ module.exports = function (express, app) {
             res.redirect('/');
         } else {
             try {
-                db.userModel.findOne({ username: req.params.username }, function (err, user) {
-                    if (err) throw new Error(err);
-                    
-                    user.boards.forEach(function (board) {
-                        if(board.title === req.params.boardtitle) {
-                            
-                            res.render('showboard', {
-                                currentUser: req.session.user,
-                                user: user,
-                                board: board,
-                                host: app.get('host')
-                            });
-                        }
-                    });
+                db.userModel.findOne({ username: req.params.username }).populate({
+                    path: 'boards',
+                    populate: { path: 'pins' }
+                }).exec(function (err, user) {
+                    if(err) {
+                        throw new Error(err);
+                    } else {
+                        db.userModel.findOne({ _id: req.session.user._id }).populate('boards').exec(function (err, currentUser) {
+                            if(err) {
+                                throw new Error(err);
+                            } else {
+                                user.boards.forEach(function (board) {
+                                    if(board.title === req.params.boardtitle) {
+                                        res.render('showboard', {
+                                            currentUser: currentUser,
+                                            user: user,
+                                            board: board,
+                                            host: app.get('host')
+                                        });
+                                    }
+                                });
+                            }
+                        });
+                    }
                 });
+                // db.userModel.findOne({ username: req.params.username }, function (err, user) {
+                //     if(err) {
+                //         throw new Error(err);
+                //     } else {
+                //         db.boardModel.findOne({
+                //             title: req.params.boardtitle,
+                //             _creator: user._id
+                //         }, function (err, board) {
+                //             if(err) {
+                //                 throw new Error(err);
+                //             } else {
+                //                 res.render('showboard', {
+                //                     currentUser: req.session.user,
+                //                     user: user,
+                //                     board: board,
+                //                     host: app.get('host')
+                //                 });
+                //             }
+                //         });
+                //     }
+                // });
             }
             catch (e) {
                 res.send(e.name + ': ' + e.message);
@@ -174,13 +216,25 @@ module.exports = function (express, app) {
             res.redirect('/');
         } else {
             try {
-                db.userModel.findOne({ username: req.params.username }, function (err, user) {
-                    if (err) throw new Error(err);
-                    res.render('userPins', {
-                        currentUser: req.session.user,
-                        user: user,
-                        host: app.get('host')
-                    });
+                db.userModel.findOne({ username: req.params.username }).populate({
+                    path: 'boards',
+                    populate: { path: 'pins' }
+                }).exec(function (err, user) {
+                    if(err) {
+                        throw new Error(err);
+                    } else {
+                        db.userModel.findOne({ _id: req.session.user._id }).populate('boards').exec(function (err, currentUser) {
+                            if(err) {
+                                throw new Error(err);
+                            } else {
+                                res.render('userPins', {
+                                    currentUser: currentUser,
+                                    user: user,
+                                    host: app.get('host')
+                                });
+                            }
+                        });
+                    }
                 });
             }
             catch (e) {

@@ -14,7 +14,7 @@ module.exports = function (express, app) {
         debugger;
         h.findOneBoard(body.boardName, currentUser._id)
             .then(function (result) {
-                if (result.length !== 0) {
+                if (result) {
                     req.flash('error', "This board has already been created. Please try another one.");
                     res.redirect('/');
                 } else {
@@ -30,7 +30,7 @@ module.exports = function (express, app) {
                         });
                 }
             }).catch(function (error) {
-                res.send(error);
+                res.send(error.message);
             });
     });
 
@@ -39,9 +39,9 @@ module.exports = function (express, app) {
         var body = _.pick(req.body, 'boardTitleinEditModal', 'boardIdinEditModal');
         var currentUser = req.session.user;
 
-        h.editBoard(body, currentUser._id)
+        h.editBoard(body)
             .then(function(user) {
-                req.session.user = user;
+                // req.session.user = user;
                 req.flash('success', "Board has been edited!");
                 res.redirect('/' + currentUser.username);
             }).catch(function(error) {
@@ -63,10 +63,10 @@ module.exports = function (express, app) {
 
     // Delete board
     router.post('/deleteboard', function (req, res) {
-        var body = _.pick(req.body, 'boardTitleinDeleteBoardModel');
+        var body = _.pick(req.body, 'boardIdinDeleteBoardModel');
         var currentUser = req.session.user;
 
-        h.deleteBoard(body.boardTitleinDeleteBoardModel, currentUser._id)
+        h.deleteBoard(body.boardIdinDeleteBoardModel, currentUser._id)
             .then(function (result) {
                 req.session.user = result;
                 req.flash('success', "Board has been deleted!");
