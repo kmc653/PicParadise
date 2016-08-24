@@ -9,6 +9,7 @@
     <script src="/js/bootstrap.min.js"></script>
     <script src="/socket.io/socket.io.js"></script>
     <script src="/js/photogrid_utils.js"></script>
+    <script src="/js/pinterest_grid.js"></script>
     <script>
     $(function () {
         var host = <%- JSON.stringify(host) %>
@@ -122,6 +123,16 @@
             $('input[name="photofilename"]').val(data.filename);
             $('input[name="photoFilenameinCreateBoardModal"]').val(data.filename);
         });
+
+        $(document).ready(function() {
+            $('#pinBoot').pinterest_grid({
+                no_columns: 4,
+                padding_x: 10,
+                padding_y: 10,
+                margin_bottom: 50,
+                single_column_breakpoint: 700
+            });
+        });
         
     });
     </script>
@@ -145,19 +156,20 @@
             </ul>
         </div>
         <div class="row">
+            <div id="pinBoot">
             <% if(currentUser.username === user.username) { %>
-                <div class="col-sm-6 col-md-3">
-                    <div class="thumbnail">
+                <div class="white-panel">
+                    <!-- <div class="thumbnail"> -->
                         <button type="button" style="height: 338px; width: 100%;" data-toggle="modal" data-target="#AddPinModal"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span><h5>Create a pin</h5></button>
-                    </div>
+                    <!-- </div> -->
                 </div>
             <% } %>
             <% user.boards.forEach(function (board) { %>
                 <%  board.pins.forEach(function (pin) { %>
-                    <div class="col-sm-6 col-md-3">
-                        <div class="thumbnail" id="pinList">
-                            <img src="https://d1uev2sppo24zv.cloudfront.net/<%= pin.filename %>" alt="">
-                            <div class="caption">
+                    <div class="white-panel" id="pinList">
+                        <!-- <div class="thumbnail"> -->
+                            <img src="https://d1uev2sppo24zv.cloudfront.net/<%= pin.filename %>" id="myImg" alt="">
+                            <!-- <div class="caption"> -->
                                 
                                 <p>Saved to <a href="/<%= user.username %>/boards/<%= board.title %>"><%= board.title %></a><span class="glyphicon glyphicon-heart" aria-hidden="true" style="float: right;"><%= pin.votes %></span></p>
 
@@ -166,11 +178,12 @@
                                 <% } else { %>
                                     <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#mySaveModal" id="saveButton" data-photofilename="<%= pin.filename %>">Save</button>
                                 <% } %>
-                            </div>
-                        </div>
+                            <!-- </div> -->
+                        <!-- </div> -->
                     </div>
                 <% }); %>
             <% }); %>
+            </div>
         </div>
     </div>
     <!-- editModal -->

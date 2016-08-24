@@ -9,6 +9,7 @@
     <script src="/js/bootstrap.min.js"></script>
     <script src="/socket.io/socket.io.js"></script>
     <script src="/js/photogrid_utils.js"></script>
+    <script src="/js/pinterest_grid.js"></script>
     <script>
     $(function () {
         var host = <%- JSON.stringify(host) %>;
@@ -26,9 +27,19 @@
         // socket.on('doUpdate', function () {
         //     renderList();
         // });
+        $(document).ready(function() {
+            $('#pinBoot').pinterest_grid({
+                no_columns: 4,
+                padding_x: 10,
+                padding_y: 10,
+                margin_bottom: 50,
+                single_column_breakpoint: 700
+            });
+        });
+
 
         function renderList () {
-            $('.row').html('');
+            $('#pinBoot').html('');
 
             $.ajax({
                 url: host + '/getimages',
@@ -37,20 +48,21 @@
                     var imageList = JSON.parse(data);
 
                     for(var i = 0; i < imageList.length; i++) {
-                        var str = '<div class="col-sm-6 col-md-3">';
-                        str += '<div class="thumbnail" id="photoList">';
+                        var str = '<div class="white-panel" id="photoList">';
+                        // var str = '<div class="col-sm-6 col-md-3">';
+                        // str += '<div class="thumbnail" id="photoList">';
                         str += '<img id="myImg" src="https://d1uev2sppo24zv.cloudfront.net/' + imageList[i].filename + '" alt="">';
-                        str += '<div class="voteUpImg">';     
+                        // str += '<div class="voteUpImg">';     
                         str += '<a href="#" data-photoid="' + imageList[i]._id + '" class="voteUp">';
                         str += '<p><img src="/img/voteup.png" alt="Click Here to Vote Up !">';
                         str += '<span>' + imageList[i].votes + '</span></p>';
                         str += '</a>';
                         str += '<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#mySaveModal" id="saveButton" data-photofilename="' + imageList[i].filename + '">Save</button>';
-                        str += '</div>';
-                        str += '</div>';
+                        // str += '</div>';
+                        // str += '</div>';
                         str += '</div>';
 
-                        $('.row').append(str);
+                        $('#pinBoot').append(str);
                     }
                 },
                 error: function (error) {
@@ -174,7 +186,7 @@
     <header>
         <%- include('./layouts/top_nav') %>
     </header>
-    <div>
+    <div class="container-fluid">
         <!-- <div class="controls">
             <input type="file" name="uploadPic" class="uploadPic">
             <button id="doUpload">Upload</button>
@@ -197,6 +209,8 @@
         </div>
 
         <div class="row">
+            <div id="pinBoot">
+            </div>
         </div>
     </div>
 </body>

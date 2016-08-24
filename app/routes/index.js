@@ -146,7 +146,7 @@ module.exports = function (express, app, formidable, fs, os, knoxClient, io) {
         newForm.on('end', function () {
             fs.rename(tmpFile, nfile, function () {
                 // Resize the image and upload this file into the S3 bucket
-                gm(nfile).resize(300).write(nfile, function () {
+                gm(nfile).resize(353,257).write(nfile, function () {
                     // Upload file to the S3 bucket
                     fs.readFile(nfile, function (err, buf) {
                         var req = knoxClient.put(fname, {
