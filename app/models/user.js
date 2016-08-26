@@ -9,7 +9,8 @@ var userSchema = Schema({
     password: { type: String, required: true },
     boards: [{ type: Schema.Types.ObjectId, ref: 'board' }],
     pins: [{ type: Schema.Types.ObjectId, ref: 'picture' }],
-    followingBoards:[{ type: Schema.Types.ObjectId, ref: 'board' }]
+    followingBoards:[{ type: Schema.Types.ObjectId, ref: 'board' }],
+    profilePic: String
 }, { timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' } });
 
 // userSchema.path('email').validate(function (email) {

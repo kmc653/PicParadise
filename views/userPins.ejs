@@ -145,8 +145,26 @@
         <%- include('./shared/messages') %>
 
         <div>
-            <h1><%= user.username %></h1>
+            <h1>
+                <% if(typeof user.profilePic === 'undefined') { %>
+                    <img src="https://d1uev2sppo24zv.cloudfront.net/noProfilePic.jpg" class="circular" alt="Responsive image">
+                <% } else { %>
+                    <img src="<%= user.profilePic %>" class="circular" alt="Responsive image">
+                <% } %>
+                  <%= user.username %>  
+                <% if(currentUser.username === user.username) { %>
+                    <div class="btn-group">
+                        <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" style="border: none; background-color: #eee;"><span class="glyphicon glyphicon-option-horizontal" aria-hidden="true"></span></button>
+                        <ul class="dropdown-menu">
+                            <li><a href="#" type="button" data-toggle="modal" data-target="#editProfilePicModal">Edit profile picture</a></li>
+                            <li role="separator" class="divider"></li>
+                            <li><a href="/logout">Log out</a></li>
+                        </ul>
+                    </div>
+                <% } %>
+            </h1>       
         </div>
+
         <div>
             <ul class="nav nav-tabs">
                 <li role="presentation"><a href="/<%= user.username %>/boards">Board (<%= user.boards.length %>)</a></li>
@@ -239,5 +257,6 @@
     <%- include('./shared/saveModal') %>
     <%- include('./shared/createBoardModal') %>
     <%- include('./shared/addPinModal') %>
+    <%- include('./shared/editProfilePicModal') %>
 </body>
 </html>

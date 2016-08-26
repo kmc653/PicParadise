@@ -19,6 +19,7 @@ var flash = require('connect-flash');
 // var db = require('./app/db');
 // var userRoutes = require('./app/routes/user.js');
 
+app.set('views', __dirname + '/views');
 app.set('view engine', 'ejs');
 app.set('host', config.host);
 app.use(express.static(__dirname + '/public'));

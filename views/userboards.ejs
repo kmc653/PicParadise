@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="/css/style.css">
     <script src="/js/jquery-2.1.4.min.js"></script>
     <script src="/js/bootstrap.min.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
     <script src="/js/photogrid_utils.js"></script>
     <script>
     $(function () {
@@ -73,8 +74,26 @@
     </header>
     <div class="container">
         <%- include('./shared/messages') %>
+        
         <div>
-            <h1><%= user.username %></h1>
+            <h1>
+                <% if(typeof user.profilePic === 'undefined') { %>
+                    <img src="https://d1uev2sppo24zv.cloudfront.net/noProfilePic.jpg" class="circular" alt="Responsive image">
+                <% } else { %>
+                    <img src="<%= user.profilePic %>" class="circular" alt="Responsive image">
+                <% } %>
+                  <%= user.username %>  
+                <% if(currentUser.username === user.username) { %>
+                    <div class="btn-group">
+                        <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" style="border: none; background-color: #eee;"><span class="glyphicon glyphicon-option-horizontal" aria-hidden="true"></span></button>
+                        <ul class="dropdown-menu">
+                            <li><a href="#" type="button" data-toggle="modal" data-target="#editProfilePicModal">Edit profile picture</a></li>
+                            <li role="separator" class="divider"></li>
+                            <li><a href="/logout">Log out</a></li>
+                        </ul>
+                    </div>
+                <% } %>
+            </h1>       
         </div>
         <div>
             <ul class="nav nav-tabs">
@@ -126,5 +145,6 @@
     <%- include('./shared/editBoardModal') %>
     <%- include('./shared/deleteBoardModal') %>
     <%- include('./shared/createBoardModal') %>
+    <%- include('./shared/editProfilePicModal') %>
 </body>
 </html>

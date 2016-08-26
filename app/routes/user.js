@@ -63,23 +63,22 @@ module.exports = function (express, app) {
                     populate: { path: 'pins' }
                 }).exec(function (err, user) {
                     if(err) {
-                        throw new Error();
+                        throw new Error(err);
                     } else {
-                        res.render('userboards', {
-                            currentUser: req.session.user,
-                            user: user,
-                            host: app.get('host')
+                        db.userModel.findById(req.session.user._id, function (err, currentUser) {
+                            if(err) {
+                                throw new Error(err);
+                            } else {
+                                res.render('userboards', {
+                                    currentUser: currentUser,
+                                    user: user,
+                                    host: app.get('host')
+                                });
+                            }
                         });
+                        
                     }
                 });
-                // db.userModel.findOne({ username: req.params.username }, function (err, user) {
-                //     if (err) throw new Error(err);
-                //     res.render('userboards', {
-                //         currentUser: req.session.user,
-                //         user: user,
-                //         host: app.get('host')
-                //     });
-                // });
             }
             catch (e) {
                 res.send(e.name + ': ' + e.message);
@@ -125,6 +124,10 @@ module.exports = function (express, app) {
                     console.log("Error when run following board: ", error);
                 });
         }
+    });
+
+    userRouter.get('/:username/settings', function (req, res) {
+        res.send("hhh");
     });
 
     boardRouter.get('/', function (req, res) {

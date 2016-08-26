@@ -3,6 +3,24 @@ body {
     background-color:#eee;
 }
 
+.circular {
+    width: 180px;
+    height: 180px;
+    border-radius: 150px;
+    -webkit-border-radius: 150px;
+    -moz-border-radius: 150px;
+    background: url(http://link-to-your/image.jpg) no-repeat;
+}
+
+.circular-mini {
+    width: 30px;
+    height: 30px;
+    border-radius: 150px;
+    -webkit-border-radius: 150px;
+    -moz-border-radius: 150px;
+    background: url(http://link-to-your/image.jpg) no-repeat;
+}
+
 #pinBoot {
   position: relative;
   max-width: 100%;
