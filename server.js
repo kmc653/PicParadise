@@ -63,6 +63,8 @@ require('./app/routes/index.js')(express, app, formidable, fs, os, knoxClient, i
 require('./app/routes/board.js')(express, app);
 require('./app/routes/user.js')(express, app);
 require('./app/routes/pin.js')(express, app);
+require('./app/routes/mailer.js')(express, app);
+require('./app/routes/password_reset.js')(express, app);
 
 server.listen(PORT, function () {
     console.log('PicParadise Running on PORT: ', PORT);

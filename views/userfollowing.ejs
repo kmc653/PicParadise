@@ -115,10 +115,12 @@
                         </div>
                         </a>
                             
-                        <% if(currentUser.followingBoards.includes(board.id)) { %>
-                            <button type="button" class="btn btn-default unfollow" id="followButton" data-ownerid="<%= user._id %>" data-boardid="<%=  board._id %>" style="width: 100%;">Unfollow</button>
-                        <% } else { %>
-                            <button type="button" class="btn btn-danger follow" id="followButton" data-ownerid="<%= user._id %>" data-boardid="<%=  board._id %>" style="width: 100%;">Follow</button>
+                        <% if(!currentUser.boards.includes(board.id)) { %>
+                            <% if(currentUser.followingBoards.includes(board.id)) { %>
+                                <button type="button" class="btn btn-default unfollow" id="followButton" data-ownerid="<%= user._id %>" data-boardid="<%=  board._id %>" style="width: 100%;">Unfollow</button>
+                            <% } else { %>
+                                <button type="button" class="btn btn-danger follow" id="followButton" data-ownerid="<%= user._id %>" data-boardid="<%=  board._id %>" style="width: 100%;">Follow</button>
+                            <% } %>
                         <% } %>
                     </div>
                 </div>

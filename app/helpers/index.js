@@ -348,6 +348,58 @@ var unfollowBoard = function (boardId, currentUser, ownerId) {
     });
 }
 
+var followUser = function (userId, currentUser) {
+    return new Promise(function (resolve, reject) {
+        db.userModel.findByIdAndUpdate(userId, {
+            $push: {
+                followers: currentUser
+            }
+        }, {new: true}, function (err, user) {
+            if(err) {
+                reject(err);
+            } else {
+                db.userModel.findByIdAndUpdate(currentUser._id, {
+                    $push: {
+                        followingUsers: user
+                    }
+                }, {new: true}, function (err, newCurrentUser) {
+                    if(err) {
+                        reject(err);
+                    } else {
+                        resolve(newCurrentUser);
+                    }
+                });
+            }
+        });
+    });
+}
+
+var unfollowUser = function (userId, currentUser) {
+    return new Promise(function (resolve, reject) {
+        db.userModel.findByIdAndUpdate(userId, {
+            $pull: {
+                followers: currentUser._id
+            }
+        }, {new: true}, function (err, user) {
+            if(err) {
+                reject(err);
+            } else {
+                db.userModel.findByIdAndUpdate(currentUser._id, {
+                    $pull: {
+                        followingUsers: user._id
+                    }
+                }, {new: true}, function (err, newCurrentUser) {
+                    if(err) {
+                        reject(err);
+                    } else {
+                        resolve(newCurrentUser);
+                    }
+                });
+            }
+        });
+    });
+}
+
 var editPin = function (boardId, photoFilename, user) {
     var newUser = deletePin(photoFilename, user);
 
@@ -416,6 +468,17 @@ var findByUsername = function (username) {
     });
 }
 
+var findByToken = function (token) {
+    return new Promise(function (resolve, reject) {
+        db.userModel.findOne({ token: token }, function (err, user) {
+            if(err) {
+                reject(err);
+            }
+            resolve(user);
+        });
+    });
+}
+
 var findOwnerByBoardId = function (boardId) {
     return new Promise(function (resolve, reject) {
         db.userModel.findOne({ "boards._id": boardId }, function (error, user) {
@@ -471,12 +534,15 @@ module.exports = {
     createNewUser,
     findById,
     findByUsername,
+    findByToken,
     findOwnerByBoardId,
     findOneBoard,
     createNewBoard,
     deleteBoard,
     followBoard,
     unfollowBoard,
+    followUser,
+    unfollowUser,
     editBoard,
     checkIfPin,
     deletePin,

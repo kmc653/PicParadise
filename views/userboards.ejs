@@ -65,6 +65,44 @@
                 }
             });
         });
+
+        $(document).on('click', '.followUser', function () {
+            var that = $(this);
+            var userId = that.data('userid');
+
+            $.ajax({
+                url: host + '/followuser',
+                type: 'POST',
+                data: {
+                    userId: userId
+                },
+                success: function () {
+                    that.prop('class', 'btn btn-default unfollowUser').html('Unfollow');
+                },
+                error: function (error) {
+                    console.log(error);
+                }
+            });
+        });
+
+        $(document).on('click', '.unfollowUser', function () {
+            var that = $(this);
+            var userId = that.data('userid');
+
+            $.ajax({
+                url: host + '/unfollowuser',
+                type: 'POST',
+                data: {
+                    userId: userId
+                },
+                success: function () {
+                    that.prop('class', 'btn btn-danger followUser').html('Follow');
+                },
+                error: function (error) {
+                    console.log(error);
+                }
+            });
+        });
     });
     </script>
 </head>
@@ -76,6 +114,9 @@
         <%- include('./shared/messages') %>
         
         <div>
+            <% if(currentUser.username !== user.username) { %>
+                <button class="btn btn-danger followUser" data-userid="<%= user._id %>">Follow</button>
+            <% } %>
             <h1>
                 <% if(typeof user.profilePic === 'undefined') { %>
                     <img src="https://d1uev2sppo24zv.cloudfront.net/noProfilePic.jpg" class="circular" alt="Responsive image">
@@ -130,6 +171,7 @@
                             <% } %>
                         </div>
                         </a>
+                        <% debugger; %>
                         <% if(currentUser.username === user.username) { %>
                             <button type="button" class="btn btn-default" data-toggle="modal" data-target="#editBoardModal" id="editButton" data-boardtitle="<%= board.title %>" data-ownerid="<%= user._id %>" data-boardid="<%=  board._id %>" style="width: 100%;">Edit</button>
                         <% } else if(currentUser.followingBoards.includes(board.id)) { %>

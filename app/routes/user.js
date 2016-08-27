@@ -65,18 +65,17 @@ module.exports = function (express, app) {
                     if(err) {
                         throw new Error(err);
                     } else {
-                        db.userModel.findById(req.session.user._id, function (err, currentUser) {
-                            if(err) {
-                                throw new Error(err);
-                            } else {
+                        // db.userModel.findOne({_id: req.session.user._id}).populate('followingBoards').exec(function (err, currentUser) {
+                        //     if(err) {
+                        //         throw new Error(err);
+                        //     } else {
                                 res.render('userboards', {
-                                    currentUser: currentUser,
+                                    currentUser: req.session.user,
                                     user: user,
                                     host: app.get('host')
                                 });
-                            }
-                        });
-                        
+                        //     }
+                        // });
                     }
                 });
             }
@@ -105,6 +104,28 @@ module.exports = function (express, app) {
             })
             .catch(function (error) {
                 console.log("Error when unfollow board: ", error);
+            });
+    });
+
+    userRouter.post('/followuser', function (req, res) {
+        h.followUser(req.body.userId, req.session.user)
+            .then(function (user) {
+                req.session.user = user;
+                res.end();
+            })
+            .catch(function (error) {
+                console.log("Error when follow user: ", error);
+            });
+    });
+
+    userRouter.post('/unfollowuser', function (req, res) {
+        h.unfollowUser(req.body.userId, req.session.user)
+            .then(function (user) {
+                req.session.user = user;
+                res.end();
+            })
+            .catch(function (error) {
+                console.log("Error when unfollow user: ", error);
             });
     });
 
@@ -140,13 +161,19 @@ module.exports = function (express, app) {
                     populate: { path: 'pins' }
                 }).exec(function (err, user) {
                     if(err) {
-                        throw new Error();
+                        throw new Error(err);
                     } else {
-                        res.render('userboards', {
-                            currentUser: req.session.user,
-                            user: user,
-                            host: app.get('host')
-                        });
+                        // db.userModel.findById(req.session.user._id, function (err, currentUser) {
+                        //     if(err) {
+                        //         throw new Error(err);
+                        //     } else {
+                                res.render('userboards', {
+                                    currentUser: req.session.user,
+                                    user: user,
+                                    host: app.get('host')
+                                });
+                        //     }
+                        // })
                     }
                 });
             }

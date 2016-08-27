@@ -2,7 +2,7 @@ function showStatus(msg,delay){
 		$('.status').hide().html(msg).fadeIn(200).delay(delay).fadeOut(300);
 }
 
-$(function(){
+$(function (){
 		$(document).on('change', '.uploadPic', function(e){
 			var ext = this.value.match(/\.([^\.]+)$/)[1].toLowerCase();
 			var permit = ['jpg','gif','png'];

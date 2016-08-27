@@ -3,13 +3,24 @@ body {
     background-color:#eee;
 }
 
+ul {
+    list-style-type: none;
+}
+
 .circular {
     width: 180px;
     height: 180px;
     border-radius: 150px;
     -webkit-border-radius: 150px;
     -moz-border-radius: 150px;
-    background: url(http://link-to-your/image.jpg) no-repeat;
+}
+
+.circular-medium {
+    width: 100px;
+    height: 100px;
+    border-radius: 150px;
+    -webkit-border-radius: 150px;
+    -moz-border-radius: 150px;
 }
 
 .circular-mini {
@@ -18,7 +29,6 @@ body {
     border-radius: 150px;
     -webkit-border-radius: 150px;
     -moz-border-radius: 150px;
-    background: url(http://link-to-your/image.jpg) no-repeat;
 }
 
 #pinBoot {

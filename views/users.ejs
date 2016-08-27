@@ -23,7 +23,13 @@
             <ul>
                 <% if(users) { %>
                     <%  users.forEach(function (user) { %>
-                        <li><a href="/<%= user.username %>"><%= user.username %></a></li>
+                        <li><a href="/<%= user.username %>">
+                            <% if(typeof user.profilePic === 'undefined') { %>
+                                <img src="https://d1uev2sppo24zv.cloudfront.net/noProfilePic.jpg" class="circular-medium" alt="Responsive image">
+                            <% } else { %>
+                                <img src="<%= user.profilePic %>" class="circular-medium" alt="Responsive image">
+                            <% } %> 
+                            <%= user.username %></a></li>
                     <% }); %>
                 <% } %>
             </ul>

@@ -1,7 +1,8 @@
 var mongoose = require('mongoose'),
     Schema = mongoose.Schema,
     bcrypt = require('bcrypt'),
-    _ = require('underscore');
+    _ = require('underscore'),
+    crypto = require('crypto');
 
 var userSchema = Schema({
     email: { type: String, required: true, index: { unique: true } },
@@ -9,14 +10,12 @@ var userSchema = Schema({
     password: { type: String, required: true },
     boards: [{ type: Schema.Types.ObjectId, ref: 'board' }],
     pins: [{ type: Schema.Types.ObjectId, ref: 'picture' }],
-    followingBoards:[{ type: Schema.Types.ObjectId, ref: 'board' }],
-    profilePic: String
+    followingBoards: [{ type: Schema.Types.ObjectId, ref: 'board' }],
+    profilePic: String,
+    followingUsers: [{ type: Schema.Types.ObjectId, ref: 'user' }],
+    followers: [{ type: Schema.Types.ObjectId, ref: 'user' }],
+    token: String
 }, { timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' } });
-
-// userSchema.path('email').validate(function (email) {
-//    var emailRegex = /^([\w-\.]+@([\w-]+\.)+[\w-]{2,4})?$/;
-//    return emailRegex.test(email.text); // Assuming email has a text attribute
-// }, 'The e-mail field cannot be empty.');
 
 userSchema.pre('save', function (next) {
     var user = this;
@@ -28,6 +27,8 @@ userSchema.pre('save', function (next) {
     if(!user.isModified('password')) {
         return next();
     }
+
+    user.token = crypto.randomBytes(256).toString('hex');
 
     bcrypt.hash(user.password, 12, function (err, hash) {
         if(err) {
@@ -49,17 +50,6 @@ userSchema.methods.isValidPassword = function (password, callback) {
         callback(null, isValid);
     });
 };
-
-// userSchema.methods.generateToken = function (type) {
-//     if(!_.isString(type)) {
-//         return undefined;
-//     }
-
-//     try {
-//         var stringData = JSON.stringify({id: this.get('id'), type: type});
-//         var encryptedData = cryptojs.AES.encrypt()
-//     }
-// }
 
 userSchema.methods.getPinsAmount = function () {
     var user = this;
