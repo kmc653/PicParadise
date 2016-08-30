@@ -4,7 +4,6 @@ var h = require('../helpers');
 var _ = require('underscore');
 var gm = require('gm');
 var db = require('../db');
-// var express = require('express');
 
 module.exports = function (express, app, formidable, fs, os, knoxClient, io) {
     var router = express.Router();
@@ -13,7 +12,6 @@ module.exports = function (express, app, formidable, fs, os, knoxClient, io) {
     io.on('connection', function (socket) {
         Socket = socket;
     });
-    // var passport = require('passport');
 
         
     router.get('/', function (req, res) {
@@ -41,38 +39,6 @@ module.exports = function (express, app, formidable, fs, os, knoxClient, io) {
         }
         res.render('signup');
     });
-
-    // router.post('/signup', function (req, res) {
-    //     var body = _.pick(req.body, 'email', 'username', 'password');
-
-    //     h.createNewUser(body)
-    //         .then(function (user) {
-    //             req.session.user = user;
-    //             req.flash('success', "Sign up successfully!");
-    //             res.redirect('/');
-    //         })
-    //         .catch(function (error) {
-    //             console.log(error);
-    //         });
-
-    //     h.findOne(body)
-    //         .then(function (result) {
-    //             if(result) {
-    //                 req.flash('error', "This email has been used. Please try another one.");
-    //                 res.render('signup');
-    //             } else {
-    //                 h.createNewUser(body)
-    //                     .then(function (user) {
-    //                         req.session.user = user;
-    //                         req.flash('success', "Sign up successfully!");
-    //                         res.redirect('/');
-    //                     })
-    //                     .catch(function (error) {
-    //                         console.log("Error when creating new user.");
-    //                     });
-    //             }
-    //         });
-    // });
 
     router.get('/login', function (req, res) {
         if(req.session.user) {
@@ -227,23 +193,6 @@ module.exports = function (express, app, formidable, fs, os, knoxClient, io) {
         });
     });
 
-    // router.get('/getfollowingboard/:userId', function (req, res) {
-    //     var boardList = [];
-
-    //     h.findById(req.params.userId).then(function (user) {
-    //         user.followingBoards.forEach(function (boardId) {
-    //             h.findOwnerByBoardId(boardId).then(function (owner) {
-    //                 owner.boards.forEach(function (board) {
-    //                     if(boardId === board.id) {
-    //                         boardList.push(board);
-    //                     }
-    //                 });
-    //             });
-    //         });
-    //         res.send(JSON.stringify(boardList));
-    //     });
-    // });
-
     router.get('/voteup/:id', function (req, res) {
         db.picModel.findByIdAndUpdate(req.params.id, {$inc:{votes:1}}, {new: true}, function (err, result) {
             res.send(JSON.stringify(result));
@@ -276,87 +225,7 @@ module.exports = function (express, app, formidable, fs, os, knoxClient, io) {
                 req.flash('error', error);
                 res.redirect('back');
             });
-            
-        
-            
-        
-
-        
-
-        // db.userModel.findOneAndUpdate({
-        //     _id: currentUserId, "boards._id": body.boardid
-        // }, {
-        //     $push: {
-        //         "boards.$.pins": body.photoid
-        //     }
-        // }, {new: true}, function (err, user) {
-        //     if(err) throw err;
-        //     res.render('index', {
-        //         user: user,
-        //         host: app.get('host')
-        //     });
-        // });
-
-        // db.userModel.findById(currentUserId, function (err, user) {
-        //     if(err) throw err;
-        //     console.log(user);
-        //     user.boards.forEach(function(board) {
-        //         if(board._id === body.boardid) {
-        //             console.log(board.title);
-        //             // board.pins.push(photoId);
-        //             // user.save(function(err) {
-        //             //     if(err) throw err;
-        //             //     Socket.emit('status', {
-        //             //                 'msg': 'Save!!',
-        //             //                 'delay': 3000
-        //             //     });
-        //             // });
-        //         }
-        //     });
-        // });
     });
 
     app.use('/', router);
 }
-
-
-
-// router.get('/auth/facebook', passport.authenticate('facebook'));
-
-// router.get('/auth/facebook/callback', passport.authenticate('facebook', {
-//     successRedirect: '/home',
-//     failureRedirect: '/login'
-// }));
-
-
-
-// module.exports = router;
-// var routes = {
-//     'get': {
-//         '/login': function (req, res, next) {
-//             res.render('login');
-//         },
-//         '/home': [h.isAuthenticated, function (req, res, next) {
-//             res.render('home', {
-//                 user: req.user
-//             });
-//         }],
-//         '/auth/facebook': passport.authenticate('facebook'),
-//         '/auth/facebook/callback': passport.authenticate('facebook', {
-//             successRedirect: '/home',
-//             failureRedirect: '/'
-//         }),
-//         '/logout': function (req, res, next) {
-//             req.logout();
-//             res.redirect('/login');
-//         }
-//     },
-//     'post': {
-
-//     },
-//     'NA': function (req, res, next) {
-//         res.status(404).sendFile(process.cwd() + '/views/404.html');
-//     }
-// }
-
-// return h.route(routes);

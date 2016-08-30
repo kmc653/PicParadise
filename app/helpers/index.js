@@ -2,29 +2,6 @@
 var router = require('express').Router();
 var db = require('../db');
 
-// Iterate through the routes object and mount the routes
-// var _registerRoutes = function (routes, method) {
-//     for(var key in routes) {
-//         if(typeof routes[key] === 'object' && routes[key] !== null && !(routes[key] instanceof Array)) {
-//             _registerRoutes(routes[key], key);
-//         } else {
-//             // Register the routes
-//             if(method === 'get') {
-//                 router.get(key, routes[key]);
-//             } else if(method === 'post') {
-//                 router.post(key, routes[key]);
-//             } else {
-//                 router.use(routes[key]);
-//             }
-//         }
-//     }
-// }
-
-// var route = function (routes) {
-//     _registerRoutes(routes);
-//     return router;
-// }
-
 // Find all users
 var findAllUsers = function () {
     return new Promise(function (resolve, reject) {
@@ -55,16 +32,6 @@ var findOne = function (email) {
 
 var findOneBoard = function (boardTitle, currentUserId) {
     return new Promise(function (resolve, reject) {
-        // db.userModel.find({
-        //     '_id': currentUserId,
-        //     'boards.title' : boardTitle
-        // }, function (err, user) {
-        //     if (err) { 
-        //         reject(err);
-        //     } else {
-        //         resolve(user);
-        //     }
-        // });
         db.boardModel.findOne({
             'title': boardTitle,
             '_creator': currentUserId
@@ -78,23 +45,6 @@ var findOneBoard = function (boardTitle, currentUserId) {
     });
 }
 
-// var createNewfbUser = function (profile) {
-//     return new Promise(function(resolve, reject) {
-//         var newPhotoUser = new db.fbUserModel({
-//             profileId: profile.id,
-//             fullName: profile.displayName,
-//             profilePic: profile.photos[0].value || ''
-//         });
-
-//         newPhotoUser.save(function (error) {
-//             if (error) {
-//                 reject(error);
-//             } else {
-//                 resolve(newPhotoUser);
-//             }
-//         });
-//     })
-// }
 var createNewUser = function (body) {
     return new Promise(function (resolve, reject) {
         var newUser = new db.userModel({
@@ -197,17 +147,6 @@ var deleteBoard = function (boardId, currentUserId) {
                 });
             }
         });
-        // db.userModel.findByIdAndUpdate(currentUserId, {
-        //     $pull: {
-        //         "boards": { title: boardtitle.toLowerCase() }
-        //     }
-        // }, {new: true}, function (err, user) {
-        //     if (err) {
-        //         reject(err);
-        //     } else {
-        //         resolve(user);
-        //     }
-        // });
     });
 }
 
@@ -231,63 +170,9 @@ var followBoard = function (boardId, currentUser, ownerId) {
                     } else {
                         resolve(user);
                     }
-                })
-                // db.userModel.findById(currentUserId, function (err, user) {
-                //     if(err) {
-                //         reject(err);
-                //     } else {
-                //         user.followingBoards.push(board);
-                //         board.followers.push(user);
-
-                //         board.save(function (err) {
-                //             if(err) reject(err);
-                //         });
-
-                //         user.save(function (err) {
-                //             if(err) {
-                //                 reject(err);
-                //             } else {
-                //                 resolve(user);
-                //             }
-                //         });
-                //     }
-                // });
+                });
             }
         });
-        // findById(ownerId).then(function (owner) {
-        //     owner.boards.forEach(function (board) {
-        //         if(board.id === boardId) {
-        //             db.userModel.findByIdAndUpdate(currentUserId, {
-        //                 $push: {
-        //                     "followingBoards": board
-        //                 }
-        //             }, {new: true}, function (err, user) {
-        //                 if (err) {
-        //                     reject(err);
-        //                 } else {
-                            
-        //                     // findById(ownerId).then(function (owner) {
-        //                     //     owner.boards.forEach(function (board) {
-        //                     //         if(board.id === boardId) {
-        //                     //             board.followers.push(currentUserId);
-        //                     //             owner.save(function (err) {
-        //                     //                 if(err) {
-        //                     //                     throw new Error(err);
-        //                     //                 } else {
-        //                     //                     resolve(user);
-        //                     //                 }
-        //                     //             })
-        //                     //         }
-        //                     //     })
-        //                     // }).catch(function (error) {
-        //                     //     reject(error);
-        //                     // });
-        //                 }
-        //             });
-        //         }
-        //     })
-        // })
-        
     });
 }
 
@@ -314,37 +199,6 @@ var unfollowBoard = function (boardId, currentUser, ownerId) {
                 });
             }
         });
-        // db.userModel.findByIdAndUpdate(currentUserId, {
-        //     $pull: {
-        //         "followingBoards": boardId
-        //     }
-        // }, {new: true}, function (err, user) {
-        //     if(err) {
-        //         reject(err);
-        //     } else {
-        //         findById(ownerId).then(function (owner) {
-        //             owner.boards.forEach(function (board) {
-        //                 if(board.id === boardId) {
-        //                     var index = board.followers.indexOf(currentUserId);
-
-        //                     if(index !== -1) {
-        //                         var remove = board.followers.splice(index, 1);
-        //                         console.log(remove);
-        //                         owner.save(function (err) {
-        //                             if(err) {
-        //                                 throw new Error();
-        //                             } else {
-        //                                 resolve(user);
-        //                             }
-        //                         })
-        //                     }
-        //                 }
-        //             });
-        //         }).catch(function (error) {
-        //             reject(error);
-        //         });
-        //     }
-        // });
     });
 }
 
@@ -530,7 +384,6 @@ var generateFilename = function (filename) {
 }
 
 module.exports = {
-    // route,
     findAllUsers,
     findOne,
     createNewUser,

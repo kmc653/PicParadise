@@ -187,30 +187,6 @@ module.exports = function (express, app) {
                 }).catch(function (error) {
                     console.log("Error when run users' boards: ", error);
                 });
-            // try {
-            //     db.userModel.findOne({ username: req.params.username }).populate({
-            //         path: 'boards',
-            //         populate: { path: 'pins' }
-            //     }).exec(function (err, user) {
-            //         if(err) {
-            //             throw new Error(err);
-            //         } else {
-            //             // db.userModel.findById(req.session.user._id, function (err, currentUser) {
-            //             //     if(err) {
-            //             //         throw new Error(err);
-            //             //     } else {
-            //                     res.render('userboards', {
-            //                         currentUser: req.session.user,
-            //                         user: user,
-            //                         host: app.get('host')
-            //                     });
-            //             //     }
-            //             // })
-            //         }
-            //     });
-            // } catch (e) {
-            //     res.send(e.name + ': ' + e.message);
-            // }
         }
     });
 
@@ -244,29 +220,7 @@ module.exports = function (express, app) {
                         });
                     }
                 });
-                // db.userModel.findOne({ username: req.params.username }, function (err, user) {
-                //     if(err) {
-                //         throw new Error(err);
-                //     } else {
-                //         db.boardModel.findOne({
-                //             title: req.params.boardtitle,
-                //             _creator: user._id
-                //         }, function (err, board) {
-                //             if(err) {
-                //                 throw new Error(err);
-                //             } else {
-                //                 res.render('showboard', {
-                //                     currentUser: req.session.user,
-                //                     user: user,
-                //                     board: board,
-                //                     host: app.get('host')
-                //                 });
-                //             }
-                //         });
-                //     }
-                // });
-            }
-            catch (e) {
+            } catch (e) {
                 res.send(e.name + ': ' + e.message);
             }
         }

@@ -48,17 +48,6 @@ module.exports = function (express, app) {
                 req.flash('error', error);
                 res.redirect('/' + currentUser.username);
             });
-        // h.findById(currentUser._id)
-        //     .then(function (user) {
-        //         user.boards.forEach(function (board) {
-        //             if(board._id === body.boardIdinEditModal) {
-        //                 board.title = body.boardTitleinEditModal;
-        //             }
-        //         });
-        //     }).catch(function (error) {
-        //         req.flash('error', "You're not authorized to delete this board");
-        //         res.redirect('/' + currentUser.username);
-        //     });
     });
 
     // Delete board

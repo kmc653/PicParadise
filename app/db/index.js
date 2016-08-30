@@ -11,15 +11,7 @@ Mongoose.connection.on('error', function (error) {
     console.log("MongoDB Error: ", error);
 });
 
-// // Create a Schema that defines the structure for storing user data
-// var fbUser = new Mongoose.Schema({
-//     profileId: String,
-//     fullName: String,
-//     profilePic: String
-// });
-
 // Turn the schema into a usable model
-// var fbUserModel = Mongoose.model('fbUser', fbUser);
 var userModel = Mongoose.model('user', userSchema);
 var picModel = Mongoose.model('picture', picSchema);
 var boardModel = Mongoose.model('board', boardSchema);
@@ -27,7 +19,6 @@ var boardModel = Mongoose.model('board', boardSchema);
 
 module.exports = {
     Mongoose,
-    // fbUserModel,
     userModel,
     picModel,
     boardModel

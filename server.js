@@ -2,22 +2,16 @@
 
 var PORT = process.env.PORT || 3000;
 var express = require('express');
-// var MongoStore = require('connect-mongo')(express);
-// var session = require('express-session');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var app = express();
 var picParadise = require('./app');
-// var passport = require('passport');
-// var mainRoutes = require('./app/routes/index.js');
 var config = require('./app/config');
 var knox = require('knox');
 var fs = require('fs');
 var os = require('os');
 var formidable = require('formidable');
 var flash = require('connect-flash');
-// var db = require('./app/db');
-// var userRoutes = require('./app/routes/user.js');
 
 app.set('views', __dirname + '/views');
 app.set('view engine', 'ejs');
