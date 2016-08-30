@@ -72,15 +72,15 @@ ul {
 
 #pinList #editButton {
     position: absolute;
-    left: 7px;
-    bottom: 25px;
+    left: 10px;
+    bottom: 40px;
     display: none;
 }
 
 #pinList #saveButton {
     position: absolute;
-    left: 7px;
-    bottom: 25px;
+    left: 10px;
+    bottom: 40px;
     display: none;
 }
 

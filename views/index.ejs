@@ -49,17 +49,12 @@
 
                     for(var i = 0; i < imageList.length; i++) {
                         var str = '<div class="white-panel" id="photoList">';
-                        // var str = '<div class="col-sm-6 col-md-3">';
-                        // str += '<div class="thumbnail" id="photoList">';
                         str += '<img id="myImg" src="https://d1uev2sppo24zv.cloudfront.net/' + imageList[i].filename + '" alt="">';
-                        // str += '<div class="voteUpImg">';     
                         str += '<a href="#" data-photoid="' + imageList[i]._id + '" class="voteUp">';
                         str += '<p><img src="/img/voteup.png" alt="Click Here to Vote Up !">';
                         str += '<span>' + imageList[i].votes + '</span></p>';
                         str += '</a>';
                         str += '<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#mySaveModal" id="saveButton" data-photofilename="' + imageList[i].filename + '">Save</button>';
-                        // str += '</div>';
-                        // str += '</div>';
                         str += '</div>';
 
                         $('#pinBoot').append(str);
@@ -72,34 +67,6 @@
         }
 
         renderList();
-
-        // function upLoadNow () {
-        //     $('.progress').fadeIn(100);
-        //     var uploadURL = host + '/upload';
-        //     var uploadFile = $('.uploadPic');
-
-        //     if(uploadFile.val() != '') {
-        //         var form = new FormData();
-        //         form.append("upload", uploadFile[0].files[0]);
-
-        //         // Perform the AJAX POST requrest and send the file
-        //         ajax({
-        //             method: 'post',
-        //             url: uploadURL,
-        //             success: function () {
-        //                 $('.progress').fadeOut(200);
-        //                 uploadFile.val('');
-        //             },
-        //             progress: function (event) {
-        //                 if(event.lengthComputable) {
-        //                     var perc = Math.round((event.loaded * 100) / event.total);
-        //                     $('.progress').css('width', (perc + '%'))
-        //                 }
-        //             },
-        //             payload: form
-        //         });
-        //     }
-        // }
 
         // click to vote
         $(document).on('click', '.voteUp', function (e) {
@@ -126,32 +93,6 @@
         	
         	$('input[name="photofilename"]').val(selectedphotofilename);
             $('input[name="photoFilenameinCreateBoardModal"]').val(selectedphotofilename);
-        	// var selectedBoardId;
-
-        	// $('select.form-control.boardlist').change(function () {
-        	// 	selectedBoardId = $(this).find(':selected').data('boardid');
-        	// });
-
-        	// $('#savetoboardbutton').click(function () {
-        	// 	$.ajax({
-        	// 		url: host + '/savephoto',
-        	// 		data: {
-        	// 			photoId: selectedphotoId,
-        	// 			boardId: selectedBoardId,
-        	// 		},
-        	// 		type: "GET", 
-        	// 		dataType: "text",
-        	// 		success: function () {
-        	// 			// var parseData = JSON.parse(data);
-        	// 			// $('#messages').append(data);
-        	// 		},
-        	// 		error: function (error) {
-         //         	   console.log(error);
-         //        	}
-        	// 	});
-         //    	return false;
-        	// });
-        	// return false;
         });
 
         // show and hide save button when mouse over or out
@@ -187,19 +128,10 @@
         <%- include('./layouts/top_nav') %>
     </header>
     <div class="container-fluid">
-        <!-- <div class="controls">
-            <input type="file" name="uploadPic" class="uploadPic">
-            <button id="doUpload">Upload</button>
-            <div class="progressBarDiv">
-                <div class="progress"></div>
-            </div>
-            <h5 class="status"></h5>
-        </div> -->
 
         <%- include('./shared/messages') %>
         <%- include('./shared/saveModal.ejs') %>
         <%- include('./shared/createBoardModal.ejs') %>
-
 
         <!-- ImageModal -->
         <div id="imageModal" class="modal image">

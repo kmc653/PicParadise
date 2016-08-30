@@ -14,6 +14,11 @@
     $(function () {
         var host = <%- JSON.stringify(host) %>
         var user = <%- JSON.stringify(user) %>
+        var socket = io.connect(host);
+
+        socket.on('connect', function () {
+            console.log('connecting!');
+        });
 
         $(document).on("click", "#editButton", function () {
             var boardId = $(this).data('boardid');
@@ -62,7 +67,7 @@
             }
         }, '#pinList');
 
-        function upLoadNow () {
+        function uploadPin () {
             $('.progress-bar').text('0%');
             $('.progress-bar').width('0%');
             // $('.progress').fadeIn(100);
@@ -80,9 +85,13 @@
                     processData: false,
                     contentType: false,
                     success: function (data) {
-                        uploadFile.val('');
-                        $('#AddPinModal').modal('hide');
-                        $('#mySaveModal').modal('show');
+                        socket.on('doUpdate', function (data) {
+                            $('input[name="photofilename"]').val(data.filename);
+                            $('input[name="photoFilenameinCreateBoardModal"]').val(data.filename);
+                            uploadFile.val('');
+                            $('#AddPinModal').modal('hide');
+                            $('#mySaveModal').modal('show');
+                        });
                     },
                     xhr: function () {
                         var xhr = new XMLHttpRequest();
@@ -109,20 +118,15 @@
             }
         }
 
-        $(document).on('click', '#doUpload', function () {
-            upLoadNow();
+        $(document).on('click', '#uploadPin', function () {
+            uploadPin();
         });
-
-        var socket = io(host);
 
         socket.on('status', function (data) {
             showStatus(data.msg, data.delay);
         });
 
-        socket.on('doUpdate', function (data) {
-            $('input[name="photofilename"]').val(data.filename);
-            $('input[name="photoFilenameinCreateBoardModal"]').val(data.filename);
-        });
+        
 
         $(document).ready(function() {
             $('#pinBoot').pinterest_grid({
@@ -212,6 +216,42 @@
             </div>
         </div>
     </div>
+
+    <!-- saveModal -->
+    <div class="modal fade" id="mySaveModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h3 class="modal-title" id="myModalLabel">Pick a board</h3>
+                </div>
+                <form role="form" action='/savephoto' method="POST">
+                    <div class="modal-body">
+                        <div class="form-group">
+                          <label>Boards list (select one):</label>
+                          <select class="form-control boardlist" name="boardid">
+                            <option value="" disabled selected>Choose a board</option>
+                            <% if(currentUser.boards.length !== 0) { %>
+                                <% currentUser.boards.forEach(function (board) { %>
+                                    <option value="<%= board._id %>"><%= board.title %></option>
+                                <% }); %>
+                            <% } %>
+                          </select>
+                          <input type="hidden" name="photofilename" value="">
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#CreateBoardModal" style="float: left;">Create a Board</button>
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-danger" id="savetoboardbutton">Save</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <%- include('./shared/createBoardModal') %>
+
     <!-- editModal -->
     <div class="modal fade" id="myEditModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
         <div class="modal-dialog" role="document">
@@ -261,9 +301,6 @@
         </div><!-- /.modal-content -->
       </div><!-- /.modal-dialog -->
     </div><!-- /.modal -->
-    
-    <%- include('./shared/saveModal') %>
-    <%- include('./shared/createBoardModal') %>
     <%- include('./shared/addPinModal') %>
     <%- include('./shared/editProfilePicModal') %>
 </body>

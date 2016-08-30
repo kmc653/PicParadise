@@ -3,7 +3,7 @@ $(function () {
     var host = <%- JSON.stringify(host) %>;
     var socket = io(host);
 
-    function upLoadNow () {
+    function uploadProfile () {
             $('.progress-bar').text('0%');
             $('.progress-bar').width('0%');
             var uploadURL = host + '/uploadprofilepic';
@@ -55,11 +55,9 @@ $(function () {
             }
         }
 
-        $(document).on('click', '#doUpload', function () {
-            upLoadNow();
+        $(document).on('click', '#uploadProfile', function () {
+            uploadProfile();
         });
-
-        
 
         socket.on('status', function (data) {
             showStatus(data.msg, data.delay);
@@ -85,7 +83,7 @@ $(function () {
             <div class="modal-footer">
                 <div class="form-group">
                     <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-primary" id="doUpload">Upload</button>
+                    <button type="button" class="btn btn-primary" id="uploadProfile">Upload</button>
                 </div>
             </div>
         </div>

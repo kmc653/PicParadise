@@ -114,13 +114,13 @@ module.exports = function (express, app, formidable, fs, os, knoxClient, io) {
                                     _creator: currentUser
                                 }).save();
 
+                                Socket.emit('doUpdate', {
+                                    'filename': fname
+                                });
+                                
                                 Socket.emit('status', {
                                     'msg': 'Save!!',
                                     'delay': 3000
-                                });
-
-                                Socket.emit('doUpdate', {
-                                    'filename': fname
                                 });
 
                                 fs.unlink(nfile, function () {
