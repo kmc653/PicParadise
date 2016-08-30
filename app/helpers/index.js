@@ -458,6 +458,8 @@ var findByUsername = function (username) {
                     path: 'pins'
                 }
             })
+            .populate('followers')
+            .populate('followingUsers')
             .exec(function (error, user) {
                 if(error) {
                     reject(error);

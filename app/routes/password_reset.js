@@ -8,7 +8,18 @@ module.exports = function (express, app) {
 
     passwordRouter.get('/password/reset_password/:token', function (req, res) {
         var token = req.params.token;
-        res.render('password_resets/resetPassword', { token: token });
+        h.findByToken(token)
+            .then(function (user) {
+                if(user !== undefined && user !== null) {
+                    res.render('password_resets/resetPassword', { token: token });
+                } else {
+                    res.render('password_resets/token_expired');
+                }
+
+            })
+            .catch(function (error) {
+                console.log(error);
+            });
     });
 
     passwordRouter.post('/password/reset_password', function (req, res) {

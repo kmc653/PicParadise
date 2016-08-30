@@ -58,6 +58,7 @@
 
         <div>
             <h1><%= board.title.toUpperCase() %></h1>
+            <p>Created by <a href="/<%= user.username %>"><%= user.username %></a></p>
         </div>
         <div>
             <% if(board.pins.length === 1) { %>

@@ -57,31 +57,18 @@ module.exports = function (express, app) {
         if(!req.session.user) {
             res.redirect('/');
         } else if(req.params.username !== 'favicon.ico') {
-            try {
-                db.userModel.findOne({ username: req.params.username }).populate({
-                    path: 'boards',
-                    populate: { path: 'pins' }
-                }).exec(function (err, user) {
-                    if(err) {
-                        throw new Error(err);
-                    } else {
-                        // db.userModel.findOne({_id: req.session.user._id}).populate('followingBoards').exec(function (err, currentUser) {
-                        //     if(err) {
-                        //         throw new Error(err);
-                        //     } else {
-                                res.render('userboards', {
-                                    currentUser: req.session.user,
-                                    user: user,
-                                    host: app.get('host')
-                                });
-                        //     }
-                        // });
+            h.findByUsername(req.params.username)
+                .then(function (user) {
+                    if(user !== undefined && user !== null) {
+                        res.render('userboards', {
+                            currentUser: req.session.user,
+                            user: user,
+                            host: app.get('host')
+                        });
                     }
+                }).catch(function (error) {
+                    console.log("Error when run users' boards: ", error);
                 });
-            }
-            catch (e) {
-                res.send(e.name + ': ' + e.message);
-            }
         }
     });
 
@@ -147,39 +134,83 @@ module.exports = function (express, app) {
         }
     });
 
-    userRouter.get('/:username/settings', function (req, res) {
-        res.send("hhh");
+    userRouter.get('/:username/followinguser', function (req, res) {
+        if(!req.session.user) {
+            res.redirect('/');
+        } else {
+            h.findByUsername(req.params.username)
+                .then(function (user) {
+                    if(user !== undefined && user !== null) {
+                        res.render('userfollowingUsers', {
+                            currentUser: req.session.user,
+                            user: user,
+                            host: app.get('host')
+                        });
+                    }
+                }).catch(function (error) {
+                    console.log("Error when run following users: ", error);
+                });
+        }
+    });
+
+    userRouter.get('/:username/followers', function (req, res) {
+        if(!req.session.user) {
+            res.redirect('/');
+        } else {
+            h.findByUsername(req.params.username)
+                .then(function (user) {
+                    res.render('userfollowers', {
+                        currentUser: req.session.user,
+                        user: user,
+                        host: app.get('host')
+                    });
+                })
+                .catch(function (error) {
+                    console.log("Error when run followers: ", error);
+                });
+        }
     });
 
     boardRouter.get('/', function (req, res) {
         if(!req.session.user) {
             res.redirect('/');
         } else if(req.params.username !== 'favicon.ico') {
-            try {
-                db.userModel.findOne({ username: req.params.username }).populate({
-                    path: 'boards',
-                    populate: { path: 'pins' }
-                }).exec(function (err, user) {
-                    if(err) {
-                        throw new Error(err);
-                    } else {
-                        // db.userModel.findById(req.session.user._id, function (err, currentUser) {
-                        //     if(err) {
-                        //         throw new Error(err);
-                        //     } else {
-                                res.render('userboards', {
-                                    currentUser: req.session.user,
-                                    user: user,
-                                    host: app.get('host')
-                                });
-                        //     }
-                        // })
+            h.findByUsername(req.params.username)
+                .then(function (user) {
+                    if(user !== undefined && user !== null) {
+                        res.render('userboards', {
+                            currentUser: req.session.user,
+                            user: user,
+                            host: app.get('host')
+                        });
                     }
+                }).catch(function (error) {
+                    console.log("Error when run users' boards: ", error);
                 });
-            }
-            catch (e) {
-                res.send(e.name + ': ' + e.message);
-            }
+            // try {
+            //     db.userModel.findOne({ username: req.params.username }).populate({
+            //         path: 'boards',
+            //         populate: { path: 'pins' }
+            //     }).exec(function (err, user) {
+            //         if(err) {
+            //             throw new Error(err);
+            //         } else {
+            //             // db.userModel.findById(req.session.user._id, function (err, currentUser) {
+            //             //     if(err) {
+            //             //         throw new Error(err);
+            //             //     } else {
+            //                     res.render('userboards', {
+            //                         currentUser: req.session.user,
+            //                         user: user,
+            //                         host: app.get('host')
+            //                     });
+            //             //     }
+            //             // })
+            //         }
+            //     });
+            // } catch (e) {
+            //     res.send(e.name + ': ' + e.message);
+            // }
         }
     });
 
@@ -258,6 +289,7 @@ module.exports = function (express, app) {
                                 throw new Error(err);
                             } else {
                                 res.render('userPins', {
+                                    current: req.session.user,
                                     currentUser: currentUser,
                                     user: user,
                                     host: app.get('host')
